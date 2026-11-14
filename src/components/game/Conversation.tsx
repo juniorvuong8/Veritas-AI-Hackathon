@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { SpeakButton } from '@/components/SpeakButton'
 import { splitHighlights } from '@/lib/highlight'
 import type { Lesson } from '@shared/types.ts'
 import { SpeechBubble } from './SpeechBubble'
+import { PrimaryButton } from './ui'
 
 const isTypingTarget = (t: EventTarget | null) =>
   t instanceof HTMLElement && (['INPUT', 'TEXTAREA', 'BUTTON'].includes(t.tagName) || t.isContentEditable)
@@ -14,7 +14,7 @@ export function HighlightedText({ text, words }: { text: string; words: string[]
       {splitHighlights(text, words).map((seg, j) =>
         seg.word ? (
           <span key={j} className="whitespace-nowrap">
-            <mark className="rounded bg-amber-200/70 px-0.5 font-semibold text-foreground underline decoration-amber-500 dark:bg-amber-400/30">
+            <mark className="rounded-md bg-[#FFD45C] px-1 font-bold text-[#2B1D16]">
               {seg.text}
             </mark>
             <SpeakButton text={seg.word} />
@@ -63,9 +63,9 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
       }}
     >
       {mapped.length > 0 && (
-        <ul className="space-y-1 text-sm text-muted-foreground">
+        <ul className="flex flex-wrap gap-2 text-sm font-semibold">
           {mapped.map((v) => (
-            <li key={v.input}>{`${v.input} → ${v.word}`}</li>
+            <li key={v.input} className="rounded-full bg-[#FFF3D6] px-3 py-1">{`${v.input} → ${v.word}`}</li>
           ))}
         </ul>
       )}
@@ -81,7 +81,7 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
             <p>
               <HighlightedText text={line.text} words={words} />
             </p>
-            {line.translation_vi && <p className="text-sm italic text-muted-foreground">{line.translation_vi}</p>}
+            {line.translation_vi && <p className="mt-0.5 text-sm italic opacity-75">{line.translation_vi}</p>}
           </SpeechBubble>
         )
       })}
@@ -90,9 +90,9 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
           <p>Cùng xem lại các từ nhé!</p>
         </SpeechBubble>
       )}
-      <Button ref={nextRef} className="sticky bottom-4 w-full shadow-md" size="lg" onClick={() => advanceRef.current()}>
+      <PrimaryButton ref={nextRef} size="lg" className="sticky bottom-4 w-full" onClick={() => advanceRef.current()}>
         Tiếp ▸
-      </Button>
+      </PrimaryButton>
     </div>
   )
 }

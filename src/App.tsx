@@ -4,10 +4,10 @@ import { CityScreen } from '@/components/game/CityScreen'
 import { PlaceScreen } from '@/components/game/PlaceScreen'
 import { StartScreen } from '@/components/game/StartScreen'
 import { LandingScreen } from '@/components/landing/LandingScreen'
+import { GameShell } from '@/components/game/ui'
 import { CITY, doorOf, type Pos } from '@/game/map'
 import { COINS_PER_CORRECT, canLevelUp, gameReducer, newGame, type GameAction, type GameState } from '@/game/state'
 import { clearGame, loadGame, saveGame } from '@/game/storage'
-import { cn } from '@/lib/utils'
 import type { Level } from '@shared/types.ts'
 
 type AppAction = GameAction | { type: 'newGame'; level: Level }
@@ -57,13 +57,7 @@ function App() {
   }
 
   return (
-    <main
-      className={cn(
-        'mx-auto min-h-svh px-4 py-6',
-        // The city uses the whole screen; reading screens keep a comfortable line length.
-        screen.name === 'city' ? 'max-w-6xl' : 'max-w-2xl sm:py-10',
-      )}
-    >
+    <GameShell wide={screen.name === 'city'}>
       {(screen.name === 'start' || !game) && (
         <StartScreen
           hasSave={game !== null}
@@ -126,7 +120,7 @@ function App() {
           onLeave={() => goToCity(doorOf(CITY, screen.placeId).outside)}
         />
       )}
-    </main>
+    </GameShell>
   )
 }
 

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react'
 import { PLACE_ART, PLAYER_EMOJI, TILE_EMOJI } from '@/game/art'
 import { CITY, samePos, type Pos, type Tile } from '@/game/map'
 import { keyToDir, step, type Dir } from '@/game/movement'
@@ -10,13 +10,20 @@ import { TopBar } from './TopBar'
 
 export const STEP_MS = 120
 
+// Warm palette matching the homepage street scene. Buildings take their place's colour (see tileStyle).
 const TILE_CLASS: Record<Tile, string> = {
-  road: 'bg-stone-300 dark:bg-stone-600',
-  grass: 'bg-green-300 dark:bg-green-800',
-  tree: 'bg-green-300 dark:bg-green-800',
-  water: 'bg-sky-300 dark:bg-sky-800',
-  building: 'bg-amber-100 dark:bg-amber-900',
-  door: 'bg-amber-100 dark:bg-amber-900',
+  road: 'bg-[#E9DCC8]',
+  grass: 'bg-[#B5DC8F]',
+  tree: 'bg-[#B5DC8F]',
+  water: 'bg-[#9AD7F2]',
+  building: '',
+  door: '',
+}
+
+function tileStyle(tile: Tile, place: string | null): CSSProperties | undefined {
+  if (!place || (tile !== 'building' && tile !== 'door')) return undefined
+  const color = PLACE_ART[place].color
+  return tile === 'door' ? { background: `${color}55` } : { background: `${color}30`, boxShadow: `inset 0 0 0 1px ${color}40` }
 }
 
 /** The building tile next to each door shows the place sign. */
@@ -148,9 +155,11 @@ export function CityScreen(props: {
       style={{ width: `min(100%, calc((100svh - 10.5rem) * ${CITY.width} / ${CITY.height}))` }}
     >
       <TopBar state={props.state} onOpenCelebration={props.onOpenCelebration} />
-      {props.showHint && <p className="text-center text-sm text-muted-foreground">Đi đến một địa điểm để bắt đầu</p>}
+      {props.showHint && (
+        <p className="text-center text-sm font-semibold text-[#2F7F7A]">Đi đến một địa điểm để bắt đầu</p>
+      )}
       <div
-        className="relative w-full touch-manipulation overflow-hidden rounded-xl border select-none"
+        className="relative w-full touch-manipulation overflow-hidden rounded-[22px] border-2 border-[#2B1D16] shadow-[5px_5px_0_#2B1D16] select-none"
         style={{
           aspectRatio: `${CITY.width} / ${CITY.height}`,
           containerType: 'inline-size',
@@ -170,11 +179,8 @@ export function CityScreen(props: {
                   onClick={() => {
                     walkTo({ x, y })
                   }}
-                  className={cn(
-                    'relative flex cursor-pointer items-center justify-center',
-                    TILE_CLASS[tile],
-                  )}
-                  style={{ fontSize: tileFont(0.6) }}
+                  className={cn('relative flex cursor-pointer items-center justify-center', TILE_CLASS[tile])}
+                  style={{ fontSize: tileFont(0.6), ...tileStyle(tile, CITY.placeAt[y][x]) }}
                   aria-label={signPlace ? `Đi đến ${getScenario(signPlace)?.name_vi}` : undefined}
                 >
                   {signPlace ? PLACE_ART[signPlace].sign : TILE_EMOJI[tile]}
@@ -192,7 +198,7 @@ export function CityScreen(props: {
           <span
             key={b.placeId}
             className={cn(
-              'pointer-events-none absolute truncate bg-black/55 px-0.5 text-center font-semibold leading-tight text-white',
+              'pointer-events-none absolute truncate px-0.5 text-center font-bold leading-tight text-white',
               b.labelAtBottom ? 'rounded-t' : 'rounded-b',
             )}
             style={{
@@ -201,6 +207,7 @@ export function CityScreen(props: {
                 ? { bottom: pct(CITY.height - 1 - b.bottom, CITY.height) }
                 : { top: pct(b.top, CITY.height) }),
               width: pct(b.w, CITY.width),
+              background: PLACE_ART[b.placeId].color,
               fontSize: `max(0.55rem, ${tileFont(0.24)})`,
             }}
           >
@@ -226,7 +233,7 @@ export function CityScreen(props: {
           {PLAYER_EMOJI}
         </div>
       </div>
-      <p className="text-center text-xs text-muted-foreground">
+      <p className="text-center text-xs font-medium text-[#2B1D16]/55">
         <span className="pointer-coarse:hidden">Dùng phím mũi tên / WASD hoặc bấm vào bản đồ để đi</span>
         <span className="hidden pointer-coarse:inline">Chạm vào bản đồ để đi</span>
       </p>

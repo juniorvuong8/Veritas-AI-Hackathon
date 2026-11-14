@@ -1,6 +1,4 @@
 import { useState } from 'react'
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
 import { FALLBACK_LESSONS } from '@/data/fallback-lessons'
 import { PLACE_ART, PLAYER_EMOJI } from '@/game/art'
 import { COINS_PER_CORRECT } from '@/game/state'
@@ -12,6 +10,7 @@ import { HostQuiz } from './HostQuiz'
 import { SpeechBubble } from './SpeechBubble'
 import { WordNotes } from './WordNotes'
 import { WordPicker } from './WordPicker'
+import { Awning, GhostButton, PrimaryButton, SecondaryButton } from './ui'
 
 type ErrorCode = Extract<LessonResult, { ok: false }>['code']
 type Phase =
@@ -55,19 +54,20 @@ export function PlaceScreen(props: {
 
   return (
     <div className="space-y-5">
-      <header className="flex items-center justify-between gap-2">
-        <h2 className="flex items-center gap-2 text-xl font-semibold">
-          <span className="text-3xl" aria-hidden>
-            {art.sign}
-          </span>
-          {scenario.name_vi}
-          {'lesson' in phase && phase.isSample && <Badge variant="secondary">Bài mẫu</Badge>}
-        </h2>
-        {phase.name !== 'done' && (
-          <Button variant="ghost" size="sm" onClick={props.onLeave}>
-            Rời đi
-          </Button>
-        )}
+      <header className="overflow-hidden rounded-3xl bg-white ring-1 ring-[#2B1D16]/10">
+        <Awning color={art.color} />
+        <div className="flex items-center justify-between gap-2 px-4 py-3">
+          <h2 className="flex min-w-0 flex-wrap items-center gap-2 text-xl font-extrabold sm:text-2xl">
+            <span className="text-3xl sm:text-4xl" aria-hidden>
+              {art.sign}
+            </span>
+            {scenario.name_vi}
+            {'lesson' in phase && phase.isSample && (
+              <span className="rounded-full bg-[#FFD45C] px-2.5 py-0.5 text-xs font-bold">Bài mẫu</span>
+            )}
+          </h2>
+          {phase.name !== 'done' && <GhostButton onClick={props.onLeave}>Rời đi</GhostButton>}
+        </div>
       </header>
 
       {phase.name === 'pick' && (
@@ -90,10 +90,10 @@ export function PlaceScreen(props: {
         <div role="status">
           <SpeechBubble speaker="" side="host" avatar={art.host}>
             <p className="flex items-center gap-2">
-              <span className="inline-flex gap-1" aria-hidden>
-                <span className="size-1.5 animate-bounce rounded-full bg-current" />
-                <span className="size-1.5 animate-bounce rounded-full bg-current [animation-delay:150ms]" />
-                <span className="size-1.5 animate-bounce rounded-full bg-current [animation-delay:300ms]" />
+              <span className="typing inline-flex gap-1" aria-hidden>
+                <i />
+                <i />
+                <i />
               </span>
               Đang chuẩn bị…
             </p>
@@ -104,17 +104,14 @@ export function PlaceScreen(props: {
       {phase.name === 'error' && (
         <div className="space-y-4" role="alert">
           {host(phase.message_vi)}
-          <div className="flex flex-col gap-2 sm:flex-row">
-            {phase.code !== 'bad_request' && <Button onClick={() => generate(words)}>Thử lại</Button>}
-            <Button
-              variant="outline"
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            {phase.code !== 'bad_request' && <PrimaryButton onClick={() => generate(words)}>Thử lại</PrimaryButton>}
+            <SecondaryButton
               onClick={() => setPhase({ name: 'talk', lesson: FALLBACK_LESSONS[props.level], isSample: true })}
             >
               Xem bài mẫu
-            </Button>
-            <Button variant="ghost" onClick={() => setPhase({ name: 'pick' })}>
-              Chọn lại từ
-            </Button>
+            </SecondaryButton>
+            <GhostButton onClick={() => setPhase({ name: 'pick' })}>Chọn lại từ</GhostButton>
           </div>
         </div>
       )}
@@ -145,16 +142,19 @@ export function PlaceScreen(props: {
       )}
 
       {phase.name === 'done' && (
-        <div className="space-y-4 text-center">
-          <p className="text-2xl font-semibold">{`Bạn trả lời đúng ${phase.correct}/${phase.total} câu`}</p>
-          <p className="text-lg">{`+${earned} 🪙`}</p>
-          <div className="mx-auto flex size-24 animate-[stamp_400ms_ease-out] items-center justify-center rounded-full border-4 border-dashed border-primary text-5xl">
+        <div className="space-y-4 rounded-3xl bg-white p-6 text-center ring-1 ring-[#2B1D16]/10">
+          <p className="text-2xl font-extrabold tracking-tight">{`Bạn trả lời đúng ${phase.correct}/${phase.total} câu`}</p>
+          <p className="inline-block rounded-full bg-[#FFF3D6] px-4 py-1 text-lg font-bold">{`+${earned} 🪙`}</p>
+          <div
+            className="mx-auto flex size-28 animate-[stamp_400ms_ease-out] items-center justify-center rounded-full border-4 border-dashed text-6xl"
+            style={{ borderColor: art.color, background: `${art.color}18` }}
+          >
             {art.sign}
           </div>
-          <p className="text-sm text-muted-foreground">Bạn đã nhận được con dấu!</p>
-          <Button className="w-full" size="lg" onClick={props.onFinish}>
+          <p className="text-sm font-semibold text-[#2B1D16]/60">Bạn đã nhận được con dấu!</p>
+          <PrimaryButton size="lg" arrow className="w-full" onClick={props.onFinish}>
             Về thành phố
-          </Button>
+          </PrimaryButton>
         </div>
       )}
     </div>

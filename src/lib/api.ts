@@ -4,7 +4,7 @@ export type LessonResult =
   | { ok: true; lesson: Lesson }
   | { ok: false; code: ErrorCode | 'timeout' | 'network'; message_vi: string }
 
-export const REQUEST_TIMEOUT_MS = 30_000
+export const REQUEST_TIMEOUT_MS = 60_000
 const TIMEOUT_MESSAGE = 'Mất quá nhiều thời gian. Vui lòng thử lại.'
 const NETWORK_MESSAGE = 'Không kết nối được. Kiểm tra mạng và thử lại.'
 const FALLBACK_ERROR = 'Không tạo được hội thoại. Vui lòng thử lại.'

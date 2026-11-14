@@ -1,10 +1,9 @@
 import { useState, type FormEvent } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { addWord, canSubmit, toggleWord } from '@/lib/selection'
 import { cn } from '@/lib/utils'
 import { getScenario, normalizeWord } from '@shared/scenarios.ts'
 import { MAX_WORDS, MIN_WORDS, isValidWord } from '@shared/validate-request.ts'
+import { PrimaryButton, SecondaryButton } from './ui'
 
 const key = (w: string) => normalizeWord(w).toLowerCase()
 const INVALID_WORD = 'Từ chỉ được dùng chữ cái, khoảng trắng, dấu gạch ngang hoặc dấu nháy (tối đa 30 ký tự).'
@@ -36,7 +35,7 @@ export function WordPicker(props: {
 
   return (
     <div className="space-y-3">
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm font-semibold text-[#2B1D16]/60">
         Đã chọn {words.length}/{MAX_WORDS} từ (cần ít nhất {MIN_WORDS})
       </p>
       <div className="flex flex-wrap gap-2">
@@ -47,8 +46,10 @@ export function WordPicker(props: {
             aria-pressed={isSelected(w)}
             onClick={() => setWords((ws) => toggleWord(ws, w))}
             className={cn(
-              'rounded-full border px-3 py-1 text-sm transition-colors',
-              isSelected(w) ? 'border-primary bg-primary text-primary-foreground' : 'bg-background hover:bg-muted',
+              'rounded-full px-3.5 py-1.5 text-sm font-bold transition-all sm:text-base',
+              isSelected(w)
+                ? 'bg-[#2B1D16] text-white shadow-[0_3px_0_#000]'
+                : 'bg-[#FFF3D6] text-[#2B1D16] hover:-translate-y-0.5 hover:bg-[#FFE8B0]',
             )}
           >
             {w}
@@ -57,7 +58,7 @@ export function WordPicker(props: {
         {customWords.map((w) => (
           <span
             key={w}
-            className="flex items-center gap-1 rounded-full border border-primary bg-primary px-3 py-1 text-sm text-primary-foreground"
+            className="flex items-center gap-1 rounded-full bg-[#2B1D16] px-3.5 py-1.5 text-sm font-bold text-white shadow-[0_3px_0_#000] sm:text-base"
           >
             <span>{w}</span>
             <button
@@ -72,7 +73,8 @@ export function WordPicker(props: {
         ))}
       </div>
       <form onSubmit={addCustom} className="flex gap-2">
-        <Input
+        <input
+          className="min-w-0 flex-1 rounded-full border-2 border-[#2B1D16]/15 bg-white px-4 py-2 text-base outline-none placeholder:text-[#2B1D16]/40 focus:border-[#2B1D16] aria-invalid:border-[#E8553D]"
           value={custom}
           onChange={(e) => {
             setCustom(e.target.value)
@@ -82,18 +84,18 @@ export function WordPicker(props: {
           placeholder="Thêm từ của bạn (tiếng Anh hoặc tiếng Việt)"
           maxLength={30}
         />
-        <Button type="submit" variant="outline" disabled={!custom.trim() || words.length >= MAX_WORDS}>
+        <SecondaryButton type="submit" disabled={!custom.trim() || words.length >= MAX_WORDS}>
           Thêm
-        </Button>
+        </SecondaryButton>
       </form>
       {customError && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" className="text-sm font-semibold text-[#C2412C]">
           {customError}
         </p>
       )}
-      <Button className="w-full" size="lg" disabled={!canSubmit(words)} onClick={() => props.onSubmit(words)}>
+      <PrimaryButton size="lg" arrow className="w-full" disabled={!canSubmit(words)} onClick={() => props.onSubmit(words)}>
         {props.submitLabel}
-      </Button>
+      </PrimaryButton>
     </div>
   )
 }

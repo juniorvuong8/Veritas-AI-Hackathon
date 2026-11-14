@@ -25,15 +25,15 @@ Progress (level, stamps, coins) is saved in the browser.
 ## How it works
 
 ```
-Browser (React game)           Supabase Edge Function              Lovable AI gateway
-  city → place ─ POST {place,──► generate-lesson                ──►  (Gemini)
+Browser (React game)           Supabase Edge Function              Claude API
+  city → place ─ POST {place,──► generate-lesson                ──►  (Claude Opus 5.5, fast mode)
   words, level}                  1. check the request
                                  2. build the prompt
   conversation ◄── Lesson JSON   3. parse + check the answer  ◄──
   quiz → stamp                   4. retry once if it fails checks
 ```
 
-- **The AI key never reaches the browser.** Only the Edge Function talks to the AI gateway.
+- **The AI key never reaches the browser.** Only the Edge Function talks to the Claude API, using the official Anthropic SDK.
 - **The app never shows broken AI output.** Every lesson is checked before it is shown: every word is used in the conversation as a whole word, the vocab matches what the learner chose, there is one quiz question per word with a valid answer, and level 3 has a translation on every line. A bad answer is retried once.
 - **Something always works.** If the AI is down, rate-limited or out of credits, the learner sees a Vietnamese message, can retry, or can open a hand-written sample lesson that passes the same checks.
 - Words are read aloud with the browser's built-in voice (🔊).
@@ -46,7 +46,7 @@ cp .env.example .env      # fill in VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHA
 npm run dev
 ```
 
-To run the Edge Function locally, install the [Supabase CLI](https://supabase.com/docs/guides/cli), put `LOVABLE_API_KEY=...` in `supabase/.env` (git-ignored), and run:
+To run the Edge Function locally, install the [Supabase CLI](https://supabase.com/docs/guides/cli), put `ANTHROPIC_API_KEY=...` (from the [Claude Console](https://platform.claude.com/)) in `supabase/.env` (git-ignored), and run:
 
 ```bash
 supabase functions serve generate-lesson --env-file supabase/.env
@@ -62,7 +62,7 @@ The suite (Vitest) covers:
 
 - **Request checks:** word count, duplicates, allowed characters, Vietnamese input (including macOS decomposed Unicode), unknown situations and levels.
 - **Lesson checks:** every way an AI answer can be wrong (missing words, words hidden inside other words, wrong vocab order, bad quiz answers, missing translations).
-- **AI handling:** JSON wrapped in code fences or prose, the gateway request format, rate-limit and out-of-credits errors.
+- **AI handling:** JSON wrapped in code fences or prose, the Claude request format, timeouts, refusals, rate-limit and out-of-credits errors.
 - **Edge Function logic:** one retry on a bad answer, no retry on rate limits, clear error codes.
 - **Game logic:** the city map, movement and collisions, tap-to-walk pathfinding (every place within 12 steps), stamps/coins/levels, and saved progress (including corrupt or blocked storage).
 - **Screens:** word picking, highlighting words in mixed-language text, the line-by-line conversation, the host quiz and coins, the city controls (keyboard, taps, cancelling a walk), the full game flow including the error → sample lesson path.
@@ -71,7 +71,7 @@ The suite (Vitest) covers:
 ## Deploying on Lovable
 
 1. Import this GitHub repository into a new Lovable project.
-2. Enable Lovable Cloud (Supabase) and Lovable AI. Lovable provides the `LOVABLE_API_KEY` secret to Edge Functions.
+2. Enable Lovable Cloud (Supabase). Add an Edge Function secret named `ANTHROPIC_API_KEY` with your Claude API key. Lovable AI is not needed.
 3. Check that the `generate-lesson` function is deployed, then open the public link and generate a lesson at each level.
 
 ## Project structure

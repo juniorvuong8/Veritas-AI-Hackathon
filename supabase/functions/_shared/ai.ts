@@ -1,60 +1,91 @@
+import Anthropic from '@anthropic-ai/sdk'
 import type { ChatMessage } from './prompt.ts'
 
-export const LOVABLE_AI_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions'
-export const DEFAULT_MODEL = 'google/gemini-3.7-flash'
-/** Per-attempt limit: two attempts must fit inside the browser's 30 s timeout. */
-export const AI_TIMEOUT_MS = 13_000
-/** Output cap (spec: usage guard). Generous, because reasoning models may count thinking tokens here. */
+export const DEFAULT_MODEL = 'claude-opus-5-5'
+/** Per-attempt limit: two attempts must fit inside the browser's request timeout (src/lib/api.ts). */
+export const AI_TIMEOUT_MS = 25_000
+/** Output cap (spec: usage guard). Generous, because thinking tokens count toward it. */
 export const MAX_OUTPUT_TOKENS = 8000
+/** Lessons are short and well specified, so low effort keeps answers fast without hurting quality. */
+export const EFFORT = 'low'
+/** Fast mode: the same model with up to ~2.5x faster output, at twice the per-token price. */
+export const SPEED: 'fast' | 'standard' = 'fast'
 
 export type AiCaller = (messages: ChatMessage[]) => Promise<string>
 
-export class AiGatewayError extends Error {
+/** The part of the Anthropic client this module uses (lets tests pass a fake). */
+export type ClaudeClient = { beta: { messages: { create: Anthropic['beta']['messages']['create'] } } }
+
+/** An AI call failed. `status` follows HTTP: 429 rate limited, 402 out of credits, 504 too slow. */
+export class AiError extends Error {
   status: number
   constructor(status: number, message: string) {
     super(message)
-    this.name = 'AiGatewayError'
+    this.name = 'AiError'
     this.status = status
   }
 }
 
-export function createLovableAiCaller(
+function toAiError(err: unknown, timeoutMs: number): unknown {
+  if (err instanceof Anthropic.APIConnectionTimeoutError)
+    return new AiError(504, `Claude did not answer within ${timeoutMs} ms`)
+  if (err instanceof Anthropic.APIConnectionError) return err
+  if (err instanceof Anthropic.APIError && typeof err.status === 'number')
+    return new AiError(err.status, `Claude API returned ${err.status}: ${err.message}`)
+  return err
+}
+
+export function createClaudeAiCaller(
   apiKey: string,
-  fetchFn: typeof fetch = fetch,
-  model: string = DEFAULT_MODEL,
-  timeoutMs: number = AI_TIMEOUT_MS,
+  opts: { client?: ClaudeClient; model?: string; timeoutMs?: number } = {},
 ): AiCaller {
+  const timeoutMs = opts.timeoutMs ?? AI_TIMEOUT_MS
+  const model = opts.model ?? DEFAULT_MODEL
+  // No SDK retries: generateLesson retries once itself, inside the time budget.
+  const client = opts.client ?? new Anthropic({ apiKey, timeout: timeoutMs, maxRetries: 0 })
+
   return async (messages) => {
-    const signal = AbortSignal.timeout(timeoutMs)
-    let res: Response
-    try {
-      res = await fetchFn(LOVABLE_AI_URL, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          'Lovable-API-Key': apiKey,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+    const system = messages.filter((m) => m.role === 'system').map((m) => m.content).join('\n\n')
+    const turns = messages
+      .filter((m) => m.role === 'user')
+      .map((m) => ({ role: 'user' as const, content: m.content }))
+
+    const send = (speed: 'fast' | 'standard') =>
+      client.beta.messages.create(
+        {
           model,
-          messages,
-          response_format: { type: 'json_object' },
           max_tokens: MAX_OUTPUT_TOKENS,
-        }),
-        signal,
-      })
+          system,
+          messages: turns,
+          output_config: { effort: EFFORT },
+          speed,
+          // If a safety check declines the request, the API retries it on a suitable model in the same call.
+          betas: ['server-side-fallback-2026-07-01'],
+          fallbacks: 'default',
+        },
+        { timeout: timeoutMs, maxRetries: 0 },
+      )
+
+    let res
+    try {
+      try {
+        res = await send(SPEED)
+      } catch (err) {
+        // Fast mode has its own rate limit: when it is full, run at standard speed instead.
+        if (SPEED === 'fast' && err instanceof Anthropic.RateLimitError) res = await send('standard')
+        else throw err
+      }
     } catch (err) {
-      if (signal.aborted) throw new AiGatewayError(504, `AI gateway did not answer within ${timeoutMs} ms`)
-      throw err
+      throw toAiError(err, timeoutMs)
     }
-    if (!res.ok) throw new AiGatewayError(res.status, `AI gateway returned ${res.status}`)
-    const data = (await res.json().catch(() => null)) as
-      | { choices?: { message?: { content?: unknown } }[] }
-      | null
-    const content = data?.choices?.[0]?.message?.content
-    if (typeof content !== 'string' || content.trim() === '')
-      throw new AiGatewayError(502, 'AI gateway returned no content')
-    return content
+
+    if (res.stop_reason === 'refusal') throw new AiError(502, 'Claude declined the request')
+    if (res.stop_reason === 'max_tokens') throw new AiError(502, 'Claude hit the output limit')
+    const text = res.content
+      .map((b) => (b.type === 'text' ? b.text : ''))
+      .join('')
+    if (text.trim() === '') throw new AiError(502, 'Claude returned no text')
+    return text
   }
 }
 

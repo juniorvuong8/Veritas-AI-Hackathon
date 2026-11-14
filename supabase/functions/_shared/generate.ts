@@ -1,4 +1,4 @@
-import { AiGatewayError, parseJsonObject, type AiCaller } from './ai.ts'
+import { AiError, parseJsonObject, type AiCaller } from './ai.ts'
 import { buildMessages } from './prompt.ts'
 import { getScenario } from './scenarios.ts'
 import type { ErrorBody, ErrorCode, Lesson } from './types.ts'
@@ -34,8 +34,8 @@ export async function generateLesson(body: unknown, callAi: AiCaller): Promise<G
     try {
       text = await callAi(messages)
     } catch (err) {
-      if (err instanceof AiGatewayError && err.status === 429) return fail('rate_limited')
-      if (err instanceof AiGatewayError && err.status === 402) return fail('out_of_credits')
+      if (err instanceof AiError && err.status === 429) return fail('rate_limited')
+      if (err instanceof AiError && err.status === 402) return fail('out_of_credits')
       console.error(`generate-lesson attempt ${attempt}: AI call failed`, err)
       continue
     }
