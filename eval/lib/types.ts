@@ -6,7 +6,8 @@ export type Method = 'baseline' | 'llm'
 export type RunResult = { ok: true; lesson: Lesson } | { ok: false; code: string }
 /** Keyed by case id. */
 export type ResultsFile = Record<string, RunResult>
-export type Rating = { q1: boolean; q2: boolean; note: string }
+/** `h` is a fingerprint of the dialogue text that was rated (see hash.ts). */
+export type Rating = { q1: boolean; q2: boolean; note: string; h?: string }
 /** Keyed by dialogue id (see dialogueId). */
 export type RatingsFile = Record<string, Rating>
 

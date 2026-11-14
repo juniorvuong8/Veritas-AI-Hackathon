@@ -16,6 +16,10 @@
           {
             "speaker": "host",
             "text": "Dạ, của anh đây. Cảm ơn anh nhé!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Cảm ơn em nhé!"
           }
         ],
         "words": {
@@ -84,6 +88,10 @@
           {
             "speaker": "host",
             "text": "Dạ, của anh đây. Cảm ơn anh nhé!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you, em nhé!"
           }
         ],
         "words": {
@@ -154,6 +162,11 @@
             "speaker": "host",
             "text": "Here you go. Have a nice day!",
             "translation_vi": "Của anh đây. Chúc anh một ngày tốt lành!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you!",
+            "translation_vi": "Cảm ơn em!"
           }
         ],
         "words": {
@@ -243,6 +256,10 @@
           {
             "speaker": "host",
             "text": "Dạ, cảm ơn chị. Hẹn gặp lại!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Cảm ơn em nhé!"
           }
         ],
         "words": {
@@ -311,6 +328,10 @@
           {
             "speaker": "host",
             "text": "Dạ, cảm ơn chị. Hẹn gặp lại!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you, em nhé!"
           }
         ],
         "words": {
@@ -332,7 +353,7 @@
           },
           "cashier": {
             "speaker": "host",
-            "text": "Chị đi đến the {w} nhé."
+            "text": "Chị ra the {w} để tính tiền nhé."
           },
           "bag": {
             "speaker": "host",
@@ -348,7 +369,7 @@
           },
           "cash": {
             "speaker": "guest",
-            "text": "Chị trả by {w} nhé."
+            "text": "Chị pay by {w} nhé."
           },
           "card": {
             "speaker": "guest",
@@ -356,7 +377,7 @@
           },
           "fresh": {
             "speaker": "host",
-            "text": "Rau hôm nay very {w} ạ."
+            "text": "Rau hôm nay rất {w} ạ."
           },
           "frozen": {
             "speaker": "guest",
@@ -381,6 +402,11 @@
             "speaker": "host",
             "text": "Thank you. See you again!",
             "translation_vi": "Cảm ơn chị. Hẹn gặp lại!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you!",
+            "translation_vi": "Cảm ơn em!"
           }
         ],
         "words": {
@@ -456,7 +482,7 @@
   "taxi": {
     "roles": {
       "host": "Tài xế",
-      "guest": "Hành khách"
+      "guest": "Khách"
     },
     "levels": {
       "1": {
@@ -470,12 +496,16 @@
           {
             "speaker": "host",
             "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Cảm ơn anh nhé!"
           }
         ],
         "words": {
           "address": {
             "speaker": "guest",
-            "text": "Anh chở tôi đến {w} này giúp tôi."
+            "text": "Anh chở tôi đến {w} này nhé."
           },
           "airport": {
             "speaker": "guest",
@@ -538,6 +568,10 @@
           {
             "speaker": "host",
             "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you, anh nhé!"
           }
         ],
         "words": {
@@ -608,6 +642,11 @@
             "speaker": "host",
             "text": "Here we are. Have a good day!",
             "translation_vi": "Tới nơi rồi. Chúc chị một ngày tốt lành!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you!",
+            "translation_vi": "Cảm ơn anh!"
           }
         ],
         "words": {
@@ -697,6 +736,10 @@
           {
             "speaker": "host",
             "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Dạ, cảm ơn bác sĩ!"
           }
         ],
         "words": {
@@ -765,6 +808,10 @@
           {
             "speaker": "host",
             "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you, bác sĩ!"
           }
         ],
         "words": {
@@ -774,23 +821,23 @@
           },
           "doctor": {
             "speaker": "guest",
-            "text": "Tôi muốn see the {w}."
+            "text": "Tôi muốn gặp the {w}."
           },
           "fever": {
             "speaker": "guest",
-            "text": "Tôi have a {w} từ tối qua."
+            "text": "I have a {w} từ tối qua."
           },
           "headache": {
             "speaker": "guest",
-            "text": "Tôi have a {w} cả ngày."
+            "text": "I have a {w} cả ngày."
           },
           "cough": {
             "speaker": "guest",
-            "text": "Tôi có a bad {w} về đêm."
+            "text": "I have a bad {w} về đêm."
           },
           "sore throat": {
             "speaker": "guest",
-            "text": "Tôi have a {w}, nuốt đau lắm."
+            "text": "I have a {w}, nuốt đau lắm."
           },
           "medicine": {
             "speaker": "host",
@@ -810,7 +857,7 @@
           },
           "pain": {
             "speaker": "guest",
-            "text": "Tôi có {w} in my stomach."
+            "text": "I have {w} ở bụng."
           },
           "prescription": {
             "speaker": "host",
@@ -835,6 +882,11 @@
             "speaker": "host",
             "text": "Get some rest. I hope you feel better soon!",
             "translation_vi": "Anh nghỉ ngơi nhé. Chúc anh mau khỏe!"
+          },
+          {
+            "speaker": "guest",
+            "text": "Thank you, doctor!",
+            "translation_vi": "Cảm ơn bác sĩ!"
           }
         ],
         "words": {

@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { validLesson } from '@shared/test-fixtures.ts'
+import { dialogueHash } from './hash'
 import { renderResults, score } from './score'
 import type { EvalCase, Method, RatingsFile, ResultsFile } from './types'
 
@@ -52,5 +53,29 @@ describe('score', () => {
   it('renders the filled-in sentence', () => {
     const md = renderResults(score(cases, results, ratings))
     expect(md).toContain('On the same 2 test cases, the baseline achieved 50% and the LLM achieved 50%.')
+  })
+
+  it('stops when a results file is missing a case', () => {
+    const partial = { ...results, llm: { 'cafe-A-L1': ok(1) } }
+    const { ['llm:cafe-A-L1']: _, ...rest } = ratings
+    expect(() => score(cases, partial, { ...rest, 'llm:cafe-A-L1': ratings['llm:cafe-A-L1'] })).toThrow(/missing from llm results: cafe-A-L2/)
+  })
+
+  it('stops when a rating was given for different dialogue text', () => {
+    const withHashes = Object.fromEntries(
+      Object.entries(ratings).map(([id, r]) => {
+        const [m, c] = id.split(':') as [Method, string]
+        const res = results[m][c]
+        return [id, { ...r, h: res.ok ? dialogueHash(res.lesson) : '' }]
+      }),
+    )
+    expect(() => score(cases, results, withHashes)).not.toThrow()
+    withHashes['baseline:cafe-A-L1'].h = 'stale'
+    expect(() => score(cases, results, withHashes)).toThrow(/baseline:cafe-A-L1/)
+  })
+
+  it('states plainly that the methods can be told apart', () => {
+    expect(renderResults(score(cases, results, ratings))).toContain('not fully blind')
+    expect(renderResults(score(cases, results, ratings))).toContain('length and turn-taking')
   })
 })

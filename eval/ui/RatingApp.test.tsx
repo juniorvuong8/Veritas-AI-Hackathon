@@ -4,6 +4,7 @@ import { describe, expect, it } from 'vitest'
 import { validLesson } from '@shared/test-fixtures.ts'
 import type { Lesson } from '@shared/types.ts'
 import type { EvalCase, Method, ResultsFile } from '../lib/types'
+import { dialogueHash } from '../lib/hash'
 import { DialogueScreen, RatingApp } from './RatingApp'
 
 function memoryStorage(): Storage {
@@ -58,5 +59,17 @@ describe('RatingApp', () => {
     expect(screen.getByText('2 / 2')).toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: 'Trước' }))
     expect(screen.getAllByRole('button', { name: 'Có' })[0]).toHaveAttribute('aria-pressed', 'true')
+  })
+
+  it('stores a hash of the dialogue text with each answer', async () => {
+    const user = userEvent.setup()
+    const storage = memoryStorage()
+    render(<RatingApp cases={[caseA]} results={results} storage={storage} />)
+    await user.click(screen.getAllByRole('button', { name: 'Có' })[0])
+    const saved = JSON.parse(storage.getItem('eval-ratings-v2')!) as Record<string, { h: string }>
+    const [id] = Object.keys(saved)
+    const [m] = id.split(':') as [Method, string]
+    const lesson = m === 'llm' ? llmLesson : baselineLesson
+    expect(saved[id].h).toBe(dialogueHash(lesson))
   })
 })

@@ -29,6 +29,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Dạ, của anh đây. Cảm ơn anh nhé!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn em nhé!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -114,6 +119,11 @@
         {
           "speaker_vi": "Nhân viên",
           "text": "Dạ, của anh đây. Cảm ơn anh nhé!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, em nhé!",
           "translation_vi": null
         }
       ],
@@ -201,6 +211,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Here you go. Have a nice day!",
           "translation_vi": "Của anh đây. Chúc anh một ngày tốt lành!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn em!"
         }
       ],
       "vocab": [
@@ -291,6 +306,11 @@
         {
           "speaker_vi": "Nhân viên",
           "text": "Dạ, của anh đây. Cảm ơn anh nhé!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn em nhé!",
           "translation_vi": null
         }
       ],
@@ -399,6 +419,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Dạ, của anh đây. Cảm ơn anh nhé!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, em nhé!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -506,6 +531,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Here you go. Have a nice day!",
           "translation_vi": "Của anh đây. Chúc anh một ngày tốt lành!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn em!"
         }
       ],
       "vocab": [
@@ -608,6 +638,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Dạ, cảm ơn chị. Hẹn gặp lại!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn em nhé!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -693,6 +728,11 @@
         {
           "speaker_vi": "Nhân viên",
           "text": "Dạ, cảm ơn chị. Hẹn gặp lại!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, em nhé!",
           "translation_vi": null
         }
       ],
@@ -780,6 +820,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Thank you. See you again!",
           "translation_vi": "Cảm ơn chị. Hẹn gặp lại!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn em!"
         }
       ],
       "vocab": [
@@ -871,6 +916,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Dạ, cảm ơn chị. Hẹn gặp lại!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn em nhé!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -961,7 +1011,7 @@
         },
         {
           "speaker_vi": "Nhân viên",
-          "text": "Chị đi đến the cashier nhé.",
+          "text": "Chị ra the cashier để tính tiền nhé.",
           "translation_vi": null
         },
         {
@@ -977,6 +1027,11 @@
         {
           "speaker_vi": "Nhân viên",
           "text": "Dạ, cảm ơn chị. Hẹn gặp lại!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, em nhé!",
           "translation_vi": null
         }
       ],
@@ -1085,6 +1140,11 @@
           "speaker_vi": "Nhân viên",
           "text": "Thank you. See you again!",
           "translation_vi": "Cảm ơn chị. Hẹn gặp lại!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn em!"
         }
       ],
       "vocab": [
@@ -1169,23 +1229,28 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
-          "text": "Anh chở tôi đến address này giúp tôi.",
+          "speaker_vi": "Khách",
+          "text": "Anh chở tôi đến address này nhé.",
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Tới ngã tư anh turn left nhé.",
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Anh ơi, fare hết bao nhiêu?",
           "translation_vi": null
         },
         {
           "speaker_vi": "Tài xế",
           "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn anh nhé!",
           "translation_vi": null
         }
       ],
@@ -1255,23 +1320,28 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Anh chở tôi đến this address nhé.",
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Anh turn left at the next corner nhé.",
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "How much is the fare vậy anh?",
           "translation_vi": null
         },
         {
           "speaker_vi": "Tài xế",
           "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, anh nhé!",
           "translation_vi": null
         }
       ],
@@ -1341,17 +1411,17 @@
           "translation_vi": "Chào chị! Chị đi đâu ạ?"
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Please take me to this address.",
           "translation_vi": "Anh chở tôi đến địa chỉ này nhé."
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Please turn left at the next corner.",
           "translation_vi": "Tới góc đường anh rẽ trái nhé."
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "How much is the fare?",
           "translation_vi": "Tiền xe bao nhiêu vậy anh?"
         },
@@ -1359,6 +1429,11 @@
           "speaker_vi": "Tài xế",
           "text": "Here we are. Have a good day!",
           "translation_vi": "Tới nơi rồi. Chúc chị một ngày tốt lành!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn anh!"
         }
       ],
       "vocab": [
@@ -1427,7 +1502,7 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Anh cho tôi ra airport nhé.",
           "translation_vi": null
         },
@@ -1442,13 +1517,18 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "Đây là tiền tip cho anh.",
           "translation_vi": null
         },
         {
           "speaker_vi": "Tài xế",
           "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Cảm ơn anh nhé!",
           "translation_vi": null
         }
       ],
@@ -1534,7 +1614,7 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "To the airport, please.",
           "translation_vi": null
         },
@@ -1549,13 +1629,18 @@
           "translation_vi": null
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "This is a tip for you, anh.",
           "translation_vi": null
         },
         {
           "speaker_vi": "Tài xế",
           "text": "Dạ, tới nơi rồi. Chúc chị một ngày vui!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you, anh nhé!",
           "translation_vi": null
         }
       ],
@@ -1641,7 +1726,7 @@
           "translation_vi": "Chào chị! Chị đi đâu ạ?"
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "To the airport, please.",
           "translation_vi": "Cho tôi ra sân bay."
         },
@@ -1656,7 +1741,7 @@
           "translation_vi": "Chị thắt dây an toàn nhé."
         },
         {
-          "speaker_vi": "Hành khách",
+          "speaker_vi": "Khách",
           "text": "This is a tip for you.",
           "translation_vi": "Đây là tiền boa cho anh."
         },
@@ -1664,6 +1749,11 @@
           "speaker_vi": "Tài xế",
           "text": "Here we are. Have a good day!",
           "translation_vi": "Tới nơi rồi. Chúc chị một ngày tốt lành!"
+        },
+        {
+          "speaker_vi": "Khách",
+          "text": "Thank you!",
+          "translation_vi": "Cảm ơn anh!"
         }
       ],
       "vocab": [
@@ -1766,6 +1856,11 @@
           "speaker_vi": "Bác sĩ",
           "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Dạ, cảm ơn bác sĩ!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -1840,7 +1935,7 @@
         },
         {
           "speaker_vi": "Bệnh nhân",
-          "text": "Tôi have a fever từ tối qua.",
+          "text": "I have a fever từ tối qua.",
           "translation_vi": null
         },
         {
@@ -1851,6 +1946,11 @@
         {
           "speaker_vi": "Bác sĩ",
           "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Thank you, bác sĩ!",
           "translation_vi": null
         }
       ],
@@ -1938,6 +2038,11 @@
           "speaker_vi": "Bác sĩ",
           "text": "Get some rest. I hope you feel better soon!",
           "translation_vi": "Anh nghỉ ngơi nhé. Chúc anh mau khỏe!"
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Thank you, doctor!",
+          "translation_vi": "Cảm ơn bác sĩ!"
         }
       ],
       "vocab": [
@@ -2029,6 +2134,11 @@
           "speaker_vi": "Bác sĩ",
           "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!",
           "translation_vi": null
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Dạ, cảm ơn bác sĩ!",
+          "translation_vi": null
         }
       ],
       "vocab": [
@@ -2114,12 +2224,12 @@
         },
         {
           "speaker_vi": "Bệnh nhân",
-          "text": "Tôi have a headache cả ngày.",
+          "text": "I have a headache cả ngày.",
           "translation_vi": null
         },
         {
           "speaker_vi": "Bệnh nhân",
-          "text": "Tôi có a bad cough về đêm.",
+          "text": "I have a bad cough về đêm.",
           "translation_vi": null
         },
         {
@@ -2135,6 +2245,11 @@
         {
           "speaker_vi": "Bác sĩ",
           "text": "Anh nhớ nghỉ ngơi nhé. Chúc anh mau khỏe!",
+          "translation_vi": null
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Thank you, bác sĩ!",
           "translation_vi": null
         }
       ],
@@ -2243,6 +2358,11 @@
           "speaker_vi": "Bác sĩ",
           "text": "Get some rest. I hope you feel better soon!",
           "translation_vi": "Anh nghỉ ngơi nhé. Chúc anh mau khỏe!"
+        },
+        {
+          "speaker_vi": "Bệnh nhân",
+          "text": "Thank you, doctor!",
+          "translation_vi": "Cảm ơn bác sĩ!"
         }
       ],
       "vocab": [

@@ -2,10 +2,11 @@ import { useMemo, useState } from 'react'
 import { cn } from '@/lib/utils'
 import { getScenario } from '@shared/scenarios.ts'
 import type { Lesson } from '@shared/types.ts'
+import { dialogueHash } from '../lib/hash'
 import { buildOrder } from '../lib/order'
 import type { EvalCase, Method, Rating, RatingsFile, ResultsFile } from '../lib/types'
 
-const STORAGE_KEY = 'eval-ratings-v1'
+const STORAGE_KEY = 'eval-ratings-v2'
 const Q1 = 'Mỗi từ tiếng Anh có được dùng đúng nghĩa và đúng tình huống không?'
 const Q2 = 'Phần tiếng Việt có tự nhiên, như người thật nói không?'
 
@@ -95,7 +96,8 @@ export function RatingApp(props: { cases: EvalCase[]; results: Record<Method, Re
 
   function update(patch: Partial<Rating>) {
     const prev: Partial<Rating> = ratings[id] ?? { note: '' }
-    const next = { ...ratings, [id]: { ...prev, ...patch } as Rating }
+    const h = result?.ok ? dialogueHash(result.lesson) : undefined
+    const next = { ...ratings, [id]: { ...prev, ...patch, h } as Rating }
     setRatings(next)
     try {
       storage?.setItem(STORAGE_KEY, JSON.stringify(next))

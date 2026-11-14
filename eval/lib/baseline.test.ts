@@ -49,4 +49,21 @@ describe('baseline', () => {
     const c = cases[5]
     expect(buildBaselineLesson(c, dict, templates)).toEqual(buildBaselineLesson(c, dict, templates))
   })
+
+  it('uses the same guest label as the LLM and ends on the guest, with at least 6 lines', () => {
+    for (const c of cases) {
+      const lesson = buildBaselineLesson(c, dict, templates)
+      expect(lesson.lines.some((l) => l.speaker_vi === 'Hành khách'), c.id).toBe(false)
+      expect(lesson.lines.at(-1)!.speaker_vi, c.id).toBe(templates[c.scenarioId].roles.guest)
+      expect(lesson.lines.length, c.id).toBeGreaterThanOrEqual(6)
+    }
+  })
+
+  it('never glues a Vietnamese subject onto an English verb', () => {
+    const bad = /\b(Tôi|Chị|Anh) (have|see)\b|\bcó (a|pain)\b|\btrả by\b|nay very \{w\}|đến the \{w\}/
+    for (const place of Object.values(templates))
+      for (const lv of Object.values(place.levels))
+        for (const line of [...lv.opening, ...lv.closing, lv.fallback, ...Object.values(lv.words)])
+          expect(bad.test(line.text), line.text).toBe(false)
+  })
 })
