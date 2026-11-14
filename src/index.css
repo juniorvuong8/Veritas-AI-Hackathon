@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -132,4 +132,76 @@
   0% { transform: scale(2.2) rotate(-20deg); opacity: 0; }
   70% { transform: scale(0.9) rotate(4deg); opacity: 1; }
   100% { transform: scale(1) rotate(0); }
+}
+
+/* ---------- landing page ---------- */
+.landing .marker {
+  background: linear-gradient(transparent 58%, #ffd45c 58%);
+  padding: 0 0.08em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+.landing .marker-dark {
+  background: none;
+  color: #ffd45c;
+}
+
+@keyframes bubble-in {
+  from { opacity: 0; transform: translateY(10px) scale(0.96); }
+  to { opacity: 1; transform: none; }
+}
+.landing .bubble-in { animation: bubble-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.2) both; }
+
+@keyframes typing-dot {
+  0%, 80%, 100% { opacity: 0.25; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-3px); }
+}
+.landing .typing i {
+  width: 6px; height: 6px; border-radius: 9999px; background: #2b1d16;
+  animation: typing-dot 1.1s infinite;
+}
+.landing .typing i:nth-child(2) { animation-delay: 0.15s; }
+.landing .typing i:nth-child(3) { animation-delay: 0.3s; }
+
+@keyframes taxi-drive {
+  from { transform: translateX(-220px); }
+  to { transform: translateX(1660px); }
+}
+.landing .taxi-drive { animation: taxi-drive 13s linear infinite; }
+
+@keyframes street-bob {
+  0%, 100% { transform: translateY(0); opacity: 0.95; }
+  50% { transform: translateY(-8px); opacity: 1; }
+}
+.landing .street-bubble { animation: street-bob 4.5s ease-in-out infinite; }
+
+@keyframes neon {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 1; }
+  94% { opacity: 0.4; }
+  96% { opacity: 1; }
+}
+.landing .neon { animation: neon 5s infinite; filter: drop-shadow(0 0 4px #ff8fa3); }
+.landing .lamp-glow { filter: drop-shadow(0 0 6px #ffe3a3); }
+
+@keyframes float-card {
+  0%, 100% { transform: translateY(0) rotate(-0.6deg); }
+  50% { transform: translateY(-6px) rotate(0.4deg); }
+}
+.landing .chat-card { animation: float-card 7s ease-in-out infinite; }
+
+.landing .string-lights {
+  background:
+    radial-gradient(circle at 20px 18px, #ffd45c 0 5px, transparent 6px) 0 0 / 60px 40px repeat-x,
+    radial-gradient(circle at 50px 24px, #ff8fa3 0 5px, transparent 6px) 0 0 / 60px 40px repeat-x;
+  filter: drop-shadow(0 0 6px #ffd45c);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .landing .bubble-in,
+  .landing .typing i,
+  .landing .taxi-drive,
+  .landing .street-bubble,
+  .landing .neon,
+  .landing .chat-card { animation: none; }
 }
