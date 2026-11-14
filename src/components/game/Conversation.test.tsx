@@ -55,4 +55,23 @@ describe('Conversation', () => {
       .map((el) => el.getAttribute('data-side'))
     expect(sides).toEqual(['host', 'player', 'host', 'player'])
   })
+
+  it('advances when the conversation itself is tapped', async () => {
+    const { user } = renderConv()
+    await user.click(screen.getByText(/Chào chị! Đây là/))
+    expect(screen.getByText(/cà phê sữa đá/)).toBeInTheDocument()
+  })
+
+  it('scrolls the next button into view after each line', async () => {
+    const calls: Element[] = []
+    const original = Element.prototype.scrollIntoView
+    Element.prototype.scrollIntoView = function (this: Element) { calls.push(this) }
+    try {
+      const { user } = renderConv()
+      await user.click(screen.getByRole('button', { name: 'Tiếp ▸' }))
+      expect(calls.at(-1)).toBe(screen.getByRole('button', { name: 'Tiếp ▸' }))
+    } finally {
+      Element.prototype.scrollIntoView = original
+    }
+  })
 })

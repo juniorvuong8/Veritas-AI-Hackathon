@@ -31,6 +31,16 @@ const SIGN_TILES = new Map<string, string>(
   }),
 )
 
+/** Bounding box of each place's building tiles, for the name label. */
+const BUILDING_BOXES = CITY.doors.map((d) => {
+  const cells = CITY.placeAt.flatMap((row, y) =>
+    row.flatMap((p, x) => (p === d.placeId && CITY.tiles[y][x] === 'building' ? [{ x, y }] : [])),
+  )
+  const xs = cells.map((c) => c.x)
+  const ys = cells.map((c) => c.y)
+  return { placeId: d.placeId, x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1 }
+})
+
 const isTypingTarget = (t: EventTarget | null) =>
   t instanceof HTMLElement && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)
 
@@ -38,6 +48,8 @@ export function CityScreen(props: {
   state: GameState
   startPos: Pos
   showHint: boolean
+  /** Ignore keys and taps (e.g. while an overlay is open). */
+  paused?: boolean
   onEnterPlace: (placeId: string) => void
   onOpenCelebration: () => void
   onMoved: () => void
@@ -85,7 +97,7 @@ export function CityScreen(props: {
   const walkTo = useCallback(
     (tapped: Pos) => {
       stopWalk()
-      if (entered.current) return
+      if (entered.current || propsRef.current.paused) return
       const target = resolveTapTarget(CITY, tapped)
       const path = target && findPath(CITY, posRef.current, target)
       if (!path || path.length === 0) return
@@ -103,7 +115,7 @@ export function CityScreen(props: {
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (isTypingTarget(e.target)) return
+      if (propsRef.current.paused || isTypingTarget(e.target)) return
       const dir = keyToDir(e.key)
       if (!dir) return
       e.preventDefault()
@@ -116,6 +128,10 @@ export function CityScreen(props: {
       stopWalk()
     }
   }, [stepDir, stopWalk])
+
+  useEffect(() => {
+    if (props.paused) stopWalk()
+  }, [props.paused, stopWalk])
 
   const pct = (n: number, of: number) => `${(n / of) * 100}%`
 
@@ -158,6 +174,15 @@ export function CityScreen(props: {
             }),
           )}
         </div>
+        {BUILDING_BOXES.map((b) => (
+          <span
+            key={b.placeId}
+            className="pointer-events-none absolute truncate rounded-b bg-black/55 px-0.5 text-center text-[clamp(0.5rem,2.4vw,0.7rem)] font-semibold leading-tight text-white"
+            style={{ left: pct(b.x, CITY.width), top: pct(b.y, CITY.height), width: pct(b.w, CITY.width) }}
+          >
+            {getScenario(b.placeId)?.name_vi}
+          </span>
+        ))}
         <div
           data-testid="player"
           data-x={pos.x}

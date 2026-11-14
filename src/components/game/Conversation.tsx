@@ -34,7 +34,7 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
   const words = lesson.vocab.map((v) => v.word)
   const hostSpeaker = lesson.lines[0]?.speaker_vi
   const mapped = lesson.vocab.filter((v) => v.input.toLowerCase() !== v.word.toLowerCase())
-  const endRef = useRef<HTMLDivElement>(null)
+  const nextRef = useRef<HTMLButtonElement>(null)
 
   const advanceRef = useRef(() => {})
   advanceRef.current = () => (allShown ? props.onDone() : setShown((n) => n + 1))
@@ -51,11 +51,17 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
   }, [])
 
   useEffect(() => {
-    endRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' })
+    nextRef.current?.scrollIntoView?.({ behavior: 'smooth', block: 'nearest' })
   }, [shown])
 
   return (
-    <div className="space-y-3">
+    <div
+      className="space-y-3"
+      onClick={(e) => {
+        // Tapping the conversation advances it; buttons (🔊, Tiếp) handle their own clicks.
+        if (!(e.target as HTMLElement).closest('button')) advanceRef.current()
+      }}
+    >
       {mapped.length > 0 && (
         <ul className="space-y-1 text-sm text-muted-foreground">
           {mapped.map((v) => (
@@ -84,8 +90,7 @@ export function Conversation(props: { lesson: Lesson; hostAvatar: string; player
           <p>Cùng xem lại các từ nhé!</p>
         </SpeechBubble>
       )}
-      <div ref={endRef} />
-      <Button className="w-full" size="lg" onClick={() => advanceRef.current()}>
+      <Button ref={nextRef} className="sticky bottom-4 w-full shadow-md" size="lg" onClick={() => advanceRef.current()}>
         Tiếp ▸
       </Button>
     </div>

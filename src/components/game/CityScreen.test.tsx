@@ -106,4 +106,22 @@ describe('CityScreen', () => {
     expect(c.pos()).toEqual(CITY.start)
     input.remove()
   })
+
+  it('ignores keys and taps while paused', () => {
+    const props = { onEnterPlace: vi.fn(), onOpenCelebration: vi.fn(), onMoved: vi.fn() }
+    const { container } = render(<CityScreen state={newGame(1)} startPos={CITY.start} showHint={false} paused {...props} />)
+    fireEvent.keyDown(window, { key: 'ArrowDown' })
+    fireEvent.click(container.querySelector(`[data-tile="${doorOf(CITY, 'cafe').pos.x},${doorOf(CITY, 'cafe').pos.y}"]`)!)
+    act(() => { vi.advanceTimersByTime(3000) })
+    const p = container.querySelector('[data-testid="player"]')!
+    expect({ x: Number(p.getAttribute('data-x')), y: Number(p.getAttribute('data-y')) }).toEqual(CITY.start)
+    expect(props.onEnterPlace).not.toHaveBeenCalled()
+  })
+
+  it('labels each place with its Vietnamese name', () => {
+    renderCity()
+    for (const name of ['Quán cà phê', 'Siêu thị', 'Gọi taxi', 'Phòng khám']) {
+      expect(screen.getByText(name)).toBeInTheDocument()
+    }
+  })
 })

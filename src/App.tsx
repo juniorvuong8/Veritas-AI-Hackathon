@@ -54,6 +54,7 @@ function App() {
             state={game}
             startPos={screen.startPos}
             showHint={showHint}
+            paused={game.celebrationOpen}
             onMoved={() => setShowHint(false)}
             onEnterPlace={(placeId) => setScreen({ name: 'place', placeId })}
             onOpenCelebration={() => dispatch({ type: 'openCelebration' })}

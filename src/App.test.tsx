@@ -96,4 +96,14 @@ describe('App', () => {
     await user.click(screen.getByRole('button', { name: 'Tiếp tục dạo phố' }))
     expect(screen.queryByText('Bạn đã hoàn thành cấp 3!')).not.toBeInTheDocument()
   })
+
+  it('does not walk behind the open celebration', async () => {
+    localStorage.setItem(SAVE_KEY, JSON.stringify({ ...newGame(1), stamps: allStamps, complete: true }))
+    const user = userEvent.setup()
+    const { container } = render(<App />)
+    await user.click(screen.getByRole('button', { name: 'Chơi tiếp' }))
+    await user.click(screen.getByRole('button', { name: /🏆/ }))
+    fireEvent.keyDown(window, { key: 'ArrowUp' })
+    expect(playerPos(container)).toEqual(CITY.start)
+  })
 })
