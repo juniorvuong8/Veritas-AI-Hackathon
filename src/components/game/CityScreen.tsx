@@ -38,7 +38,11 @@ const BUILDING_BOXES = CITY.doors.map((d) => {
   )
   const xs = cells.map((c) => c.x)
   const ys = cells.map((c) => c.y)
-  return { placeId: d.placeId, x: Math.min(...xs), y: Math.min(...ys), w: Math.max(...xs) - Math.min(...xs) + 1 }
+  const top = Math.min(...ys)
+  const bottom = Math.max(...ys)
+  // Put the name on the edge away from the door, so it never covers the sign next to the door.
+  const labelAtBottom = d.pos.y < top
+  return { placeId: d.placeId, x: Math.min(...xs), w: Math.max(...xs) - Math.min(...xs) + 1, top, bottom, labelAtBottom }
 })
 
 const isTypingTarget = (t: EventTarget | null) =>
@@ -134,14 +138,23 @@ export function CityScreen(props: {
   }, [props.paused, stopWalk])
 
   const pct = (n: number, of: number) => `${(n / of) * 100}%`
+  // Sizes relative to one tile's width (container query units), so the map scales on any screen.
+  const tileFont = (share: number) => `calc(100cqw / ${CITY.width} * ${share})`
 
   return (
-    <div className="space-y-3">
+    <div
+      className="mx-auto space-y-3"
+      // The whole column (bar, map, hints) is as wide as the map can be on this screen.
+      style={{ width: `min(100%, calc((100svh - 10.5rem) * ${CITY.width} / ${CITY.height}))` }}
+    >
       <TopBar state={props.state} onOpenCelebration={props.onOpenCelebration} />
       {props.showHint && <p className="text-center text-sm text-muted-foreground">Đi đến một địa điểm để bắt đầu</p>}
       <div
-        className="relative mx-auto w-full max-w-[480px] overflow-hidden rounded-xl border select-none"
-        style={{ aspectRatio: `${CITY.width} / ${CITY.height}` }}
+        className="relative w-full touch-manipulation overflow-hidden rounded-xl border select-none"
+        style={{
+          aspectRatio: `${CITY.width} / ${CITY.height}`,
+          containerType: 'inline-size',
+        }}
       >
         <div
           className="grid h-full w-full"
@@ -158,9 +171,10 @@ export function CityScreen(props: {
                     walkTo({ x, y })
                   }}
                   className={cn(
-                    'relative flex cursor-pointer items-center justify-center text-[min(5vw,1.4rem)]',
+                    'relative flex cursor-pointer items-center justify-center',
                     TILE_CLASS[tile],
                   )}
+                  style={{ fontSize: tileFont(0.6) }}
                   aria-label={signPlace ? `Đi đến ${getScenario(signPlace)?.name_vi}` : undefined}
                 >
                   {signPlace ? PLACE_ART[signPlace].sign : TILE_EMOJI[tile]}
@@ -177,8 +191,18 @@ export function CityScreen(props: {
         {BUILDING_BOXES.map((b) => (
           <span
             key={b.placeId}
-            className="pointer-events-none absolute truncate rounded-b bg-black/55 px-0.5 text-center text-[clamp(0.5rem,2.4vw,0.7rem)] font-semibold leading-tight text-white"
-            style={{ left: pct(b.x, CITY.width), top: pct(b.y, CITY.height), width: pct(b.w, CITY.width) }}
+            className={cn(
+              'pointer-events-none absolute truncate bg-black/55 px-0.5 text-center font-semibold leading-tight text-white',
+              b.labelAtBottom ? 'rounded-t' : 'rounded-b',
+            )}
+            style={{
+              left: pct(b.x, CITY.width),
+              ...(b.labelAtBottom
+                ? { bottom: pct(CITY.height - 1 - b.bottom, CITY.height) }
+                : { top: pct(b.top, CITY.height) }),
+              width: pct(b.w, CITY.width),
+              fontSize: `max(0.55rem, ${tileFont(0.24)})`,
+            }}
           >
             {getScenario(b.placeId)?.name_vi}
           </span>
@@ -188,8 +212,9 @@ export function CityScreen(props: {
           data-x={pos.x}
           data-y={pos.y}
           aria-label="Bạn"
-          className="pointer-events-none absolute flex items-center justify-center text-[min(5.5vw,1.6rem)]"
+          className="pointer-events-none absolute flex items-center justify-center"
           style={{
+            fontSize: tileFont(0.7),
             width: pct(1, CITY.width),
             height: pct(1, CITY.height),
             left: 0,
@@ -201,7 +226,10 @@ export function CityScreen(props: {
           {PLAYER_EMOJI}
         </div>
       </div>
-      <p className="text-center text-xs text-muted-foreground">Dùng phím mũi tên / WASD hoặc chạm vào bản đồ để đi</p>
+      <p className="text-center text-xs text-muted-foreground">
+        <span className="pointer-coarse:hidden">Dùng phím mũi tên / WASD hoặc bấm vào bản đồ để đi</span>
+        <span className="hidden pointer-coarse:inline">Chạm vào bản đồ để đi</span>
+      </p>
     </div>
   )
 }

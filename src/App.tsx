@@ -6,6 +6,7 @@ import { StartScreen } from '@/components/game/StartScreen'
 import { CITY, doorOf, type Pos } from '@/game/map'
 import { COINS_PER_CORRECT, canLevelUp, gameReducer, newGame, type GameAction, type GameState } from '@/game/state'
 import { clearGame, loadGame, saveGame } from '@/game/storage'
+import { cn } from '@/lib/utils'
 import type { Level } from '@shared/types.ts'
 
 type AppAction = GameAction | { type: 'newGame'; level: Level }
@@ -33,7 +34,13 @@ function App() {
   }
 
   return (
-    <main className="mx-auto min-h-svh max-w-2xl px-4 py-6 sm:py-10">
+    <main
+      className={cn(
+        'mx-auto min-h-svh px-4 py-6',
+        // The city uses the whole screen; reading screens keep a comfortable line length.
+        screen.name === 'city' ? 'max-w-6xl' : 'max-w-2xl sm:py-10',
+      )}
+    >
       {(screen.name === 'start' || !game) && (
         <StartScreen
           hasSave={game !== null}
