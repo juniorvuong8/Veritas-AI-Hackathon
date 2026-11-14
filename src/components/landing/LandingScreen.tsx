@@ -3,8 +3,8 @@ import { ArrowRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { SCENARIOS } from '@shared/scenarios.ts'
 import { ChatDemo } from './ChatDemo'
-import { COPY, loadLang, saveLang, type Lang } from './copy'
-import { STREET_BUBBLES, StreetScene } from './StreetScene'
+import { COPY, STREET_BUBBLES, loadLang, saveLang, type Lang } from './copy'
+import { StreetScene } from './StreetScene'
 
 const PLACE_COLORS: Record<string, string> = {
   cafe: '#2F7F7A',

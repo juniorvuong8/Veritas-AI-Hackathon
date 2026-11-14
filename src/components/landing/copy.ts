@@ -128,3 +128,12 @@ export const DEMO_VOCAB_EN: Record<string, { meaning: string; usage: string }> =
   'to go': { meaning: 'to take away', usage: 'When staff ask if you will drink there or leave. Say "To go, please."' },
   receipt: { meaning: 'the paper showing what you paid', usage: 'After paying, when you need proof of the amount. Say "Can I have the receipt?"' },
 }
+
+/** English phrases that float over the street like overheard speech. */
+export const STREET_BUBBLES: { text: string; left: string; top: string; delay: string }[] = [
+  { text: 'Hi there!', left: '6%', top: '8%', delay: '0s' },
+  { text: 'For here or to go?', left: '17%', top: '22%', delay: '1.2s' },
+  { text: 'Aisle 5', left: '37%', top: '18%', delay: '2.1s' },
+  { text: 'Turn left, please', left: '58%', top: '10%', delay: '0.6s' },
+  { text: 'I have a fever', left: '77%', top: '20%', delay: '1.7s' },
+]

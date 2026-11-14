@@ -1,8 +1,19 @@
 # Học từ qua hội thoại (Vocab Conversations)
 
-A web app that teaches beginner English vocabulary to Vietnamese speakers through everyday conversations. Built for the Veritas AI Hackathon.
+A small 2D city game that teaches beginner English vocabulary to Vietnamese speakers through everyday conversations. Built for the Veritas AI Hackathon.
 
-The learner picks a situation (café, supermarket, taxi, clinic), chooses 3–5 English words (from a suggested list, or typed in English *or* Vietnamese), and picks a level. An AI writes a short conversation, mostly in Vietnamese, with those English words used naturally. Each word comes with an explanation of what it means and **when to use it**, and a short quiz tests every word in a new situation.
+You walk around a city with four places: a café, a supermarket, a taxi stand and a clinic. Walk into one, choose 3–5 English words (from a suggested list, or typed in English *or* Vietnamese), and the person who works there acts out a short AI-written conversation with you, using those words naturally. Each word comes with an explanation of what it means and **when to use it**. Then the host quizzes you: right answers earn coins, and finishing earns the place's stamp in your passport.
+
+## How to play
+
+1. **Choose a level** (it stays the same until you've stamped all four places).
+2. **Walk** with the arrow keys / WASD, or tap the map to walk there.
+3. **Enter a place** and pick your words.
+4. **Read the conversation** one line at a time (tap "Tiếp ▸", or press Enter/Space). Highlighted words have 🔊 to hear them.
+5. **Take the host's quiz**: +10 🪙 per right answer, and a stamp when you finish.
+6. **Collect all four stamps** to finish the level, then play again or move up a level.
+
+Progress (level, stamps, coins) is saved in the browser.
 
 | Level | What the conversation looks like |
 |---|---|
@@ -13,12 +24,12 @@ The learner picks a situation (café, supermarket, taxi, clinic), chooses 3–5 
 ## How it works
 
 ```
-Browser (React)                Supabase Edge Function              Lovable AI gateway
-  choose ─ POST {scenario, ──►  generate-lesson                ──►  (Gemini)
+Browser (React game)           Supabase Edge Function              Lovable AI gateway
+  city → place ─ POST {place,──► generate-lesson                ──►  (Gemini)
   words, level}                  1. check the request
                                  2. build the prompt
-  read ◄── Lesson JSON ───────   3. parse + check the answer  ◄──
-  quiz                           4. retry once if it fails checks
+  conversation ◄── Lesson JSON   3. parse + check the answer  ◄──
+  quiz → stamp                   4. retry once if it fails checks
 ```
 
 - **The AI key never reaches the browser.** Only the Edge Function talks to the AI gateway.
@@ -52,7 +63,8 @@ The suite (Vitest) covers:
 - **Lesson checks:** every way an AI answer can be wrong (missing words, words hidden inside other words, wrong vocab order, bad quiz answers, missing translations).
 - **AI handling:** JSON wrapped in code fences or prose, the gateway request format, rate-limit and out-of-credits errors.
 - **Edge Function logic:** one retry on a bad answer, no retry on rate limits, clear error codes.
-- **Screens:** choosing words, highlighting words in mixed-language text, the quiz and scoring, the full app flow including the error → sample lesson path.
+- **Game logic:** the city map, movement and collisions, tap-to-walk pathfinding (every place within 12 steps), stamps/coins/levels, and saved progress (including corrupt or blocked storage).
+- **Screens:** word picking, highlighting words in mixed-language text, the line-by-line conversation, the host quiz and coins, the city controls (keyboard, taps, cancelling a walk), the full game flow including the error → sample lesson path.
 - **Sample lessons** pass the same checks as AI lessons.
 
 ## Deploying on Lovable
@@ -65,7 +77,8 @@ The suite (Vitest) covers:
 
 ```
 src/                          React app (Vite, Tailwind, shadcn/ui)
-  components/                 ChooseScreen, ReadScreen, QuizScreen
+  game/                       pure game logic: map, movement, pathfinding, state, saving, emoji art table
+  components/game/            StartScreen, CityScreen, PlaceScreen, conversation, quiz, celebration
   lib/                        API client, word selection, highlighting, speech, quiz scoring
   data/fallback-lessons.ts    hand-written sample lessons
 supabase/functions/
