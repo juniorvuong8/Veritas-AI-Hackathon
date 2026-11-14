@@ -5,7 +5,9 @@ export type ChatMessage = { role: 'system' | 'user'; content: string }
 
 const SYSTEM_PROMPT = `You write short practice conversations that teach English vocabulary to Vietnamese speakers who are beginners in English.
 
-The learner picks a situation, 3-5 words and a level. You write one realistic conversation (4-8 lines, two speakers with Vietnamese role names such as "Nhân viên" and "Khách") that uses every chosen word naturally, in the sense people really use it in that situation. Then you explain each word and write a short quiz.
+The learner picks a situation, 3-5 words and a level. You write one realistic conversation (4-8 lines, exactly two speakers with Vietnamese role names such as "Nhân viên" and "Khách") that uses every chosen word naturally, in the sense people really use it in that situation. Then you explain each word and write a short quiz.
+
+The first line is spoken by the person who works there (staff, cashier, driver, doctor). The other speaker is the learner's role (customer, passenger, patient).
 
 How much English goes in the conversation depends on the level:
 - Level 1: Vietnamese sentences with only the chosen English words inserted. Example: "Chị uống ở đây hay to go ạ?"

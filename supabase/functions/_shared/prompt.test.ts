@@ -31,4 +31,10 @@ describe('buildMessages', () => {
     expect(user.content).toContain('Level: 2')
     expect(user.content).toContain(cafe.promptContext)
   })
+
+  it('states the two-speaker, host-first rule', () => {
+    const [system] = buildMessages(cafe, validRequest)
+    expect(system.content).toContain('exactly two speakers')
+    expect(system.content).toContain('The first line is spoken by the person who works there')
+  })
 })
