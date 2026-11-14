@@ -7,11 +7,12 @@ import { ReadScreen } from '@/components/ReadScreen'
 import { FALLBACK_LESSONS } from '@/data/fallback-lessons'
 import { requestLesson } from '@/lib/api'
 import type { Lesson, LessonRequest } from '@shared/types.ts'
+import type { LessonResult } from '@/lib/api'
 
 type State =
   | { screen: 'choose' }
   | { screen: 'loading' }
-  | { screen: 'error'; message_vi: string }
+  | { screen: 'error'; code: Extract<LessonResult, { ok: false }>['code']; message_vi: string }
   | { screen: 'read'; lesson: Lesson; isSample: boolean }
   | { screen: 'quiz'; lesson: Lesson }
 
@@ -26,7 +27,7 @@ function App() {
     setState(
       result.ok
         ? { screen: 'read', lesson: result.lesson, isSample: false }
-        : { screen: 'error', message_vi: result.message_vi },
+        : { screen: 'error', code: result.code, message_vi: result.message_vi },
     )
   }
 
@@ -51,7 +52,7 @@ function App() {
           <CardContent className="space-y-4">
             <p role="alert">{state.message_vi}</p>
             <div className="flex flex-col gap-2 sm:flex-row">
-              <Button onClick={() => generate(request)}>Thử lại</Button>
+              {state.code !== 'bad_request' && <Button onClick={() => generate(request)}>Thử lại</Button>}
               <Button
                 variant="outline"
                 onClick={() =>

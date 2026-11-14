@@ -5,7 +5,7 @@ import { addWord, canSubmit, toggleWord } from '@/lib/selection'
 import { cn } from '@/lib/utils'
 import { SCENARIOS, getScenario, normalizeWord } from '@shared/scenarios.ts'
 import type { LessonRequest, Level } from '@shared/types.ts'
-import { MAX_WORDS, MIN_WORDS } from '@shared/validate-request.ts'
+import { MAX_WORDS, MIN_WORDS, isValidWord } from '@shared/validate-request.ts'
 
 const LEVELS: { level: Level; label: string }[] = [
   { level: 1, label: 'Cấp 1: chỉ từ mới bằng tiếng Anh' },
@@ -20,6 +20,7 @@ export function ChooseScreen(props: { initial?: LessonRequest; onSubmit: (req: L
   const [words, setWords] = useState<string[]>(props.initial?.words ?? [])
   const [level, setLevel] = useState<Level>(props.initial?.level ?? 1)
   const [custom, setCustom] = useState('')
+  const [customError, setCustomError] = useState<string | undefined>()
 
   const scenario = scenarioId ? getScenario(scenarioId) : undefined
   const suggested = scenario?.suggestedWords ?? []
@@ -33,6 +34,11 @@ export function ChooseScreen(props: { initial?: LessonRequest; onSubmit: (req: L
 
   function addCustom(e: FormEvent) {
     e.preventDefault()
+    if (!isValidWord(normalizeWord(custom))) {
+      setCustomError('Từ chỉ được dùng chữ cái, khoảng trắng, dấu gạch ngang hoặc dấu nháy (tối đa 30 ký tự).')
+      return
+    }
+    setCustomError(undefined)
     setWords((ws) => addWord(ws, custom))
     setCustom('')
   }
@@ -103,7 +109,11 @@ export function ChooseScreen(props: { initial?: LessonRequest; onSubmit: (req: L
           <form onSubmit={addCustom} className="flex gap-2">
             <Input
               value={custom}
-              onChange={(e) => setCustom(e.target.value)}
+              onChange={(e) => {
+                setCustom(e.target.value)
+                setCustomError(undefined)
+              }}
+              aria-invalid={customError ? true : undefined}
               placeholder="Thêm từ của bạn (tiếng Anh hoặc tiếng Việt)"
               maxLength={30}
             />
@@ -111,6 +121,11 @@ export function ChooseScreen(props: { initial?: LessonRequest; onSubmit: (req: L
               Thêm
             </Button>
           </form>
+          {customError && (
+            <p role="alert" className="text-sm text-destructive">
+              {customError}
+            </p>
+          )}
         </section>
       )}
 

@@ -46,6 +46,19 @@ describe('createLovableAiCaller', () => {
     expect(body.model).toBe('google/gemini-3.7-flash')
     expect(body.messages).toEqual(messages)
     expect(body.response_format).toEqual({ type: 'json_object' })
+    expect(body.max_tokens).toBe(8000)
+    expect(init.signal).toBeInstanceOf(AbortSignal)
+  })
+
+  it('throws a retryable AiGatewayError 504 when the gateway is too slow', async () => {
+    const slow = vi.fn(
+      (_url: string, init: RequestInit) =>
+        new Promise<Response>((_resolve, reject) => {
+          init.signal?.addEventListener('abort', () => reject(new DOMException('timed out', 'TimeoutError')))
+        }),
+    )
+    const call = createLovableAiCaller('k', slow as unknown as typeof fetch, undefined, 10)
+    await expect(call(messages)).rejects.toMatchObject({ name: 'AiGatewayError', status: 504 })
   })
 
   it('throws AiGatewayError 429 when rate-limited', async () => {

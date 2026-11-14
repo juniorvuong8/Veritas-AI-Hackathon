@@ -27,3 +27,16 @@ describe('ChooseScreen', () => {
     expect(screen.getByText(/Đã chọn 1\/5 từ/)).toBeInTheDocument()
   })
 })
+
+describe('ChooseScreen custom word rules', () => {
+  it('refuses a word with digits and explains why', async () => {
+    const user = userEvent.setup()
+    render(<ChooseScreen onSubmit={vi.fn()} />)
+    await user.click(screen.getByRole('button', { name: /Quán cà phê/ }))
+    await user.type(screen.getByPlaceholderText(/Thêm từ của bạn/), 'coffee2')
+    await user.click(screen.getByRole('button', { name: 'Thêm' }))
+    expect(screen.queryByText('coffee2')).not.toBeInTheDocument()
+    expect(screen.getByText(/chỉ được dùng chữ cái/)).toBeInTheDocument()
+    expect(screen.getByText(/Đã chọn 0\/5 từ/)).toBeInTheDocument()
+  })
+})

@@ -31,6 +31,12 @@ Deno.serve(async (req) => {
     return json(502, { code: 'ai_failed', message_vi: ERRORS.ai_failed.message_vi })
   }
 
-  const result = await generateLesson(body, createLovableAiCaller(apiKey))
-  return json(result.status, result.body)
+  try {
+    const result = await generateLesson(body, createLovableAiCaller(apiKey))
+    return json(result.status, result.body)
+  } catch (err) {
+    // Keep CORS headers on unexpected failures so the browser shows our message, not a network error.
+    console.error('generate-lesson: unexpected error', err)
+    return json(502, { code: 'ai_failed', message_vi: ERRORS.ai_failed.message_vi })
+  }
 })

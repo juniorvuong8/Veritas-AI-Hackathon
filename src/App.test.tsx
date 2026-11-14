@@ -55,3 +55,16 @@ describe('App', () => {
     expect(mocked.mock.calls[1][0]).toEqual(mocked.mock.calls[0][0])
   })
 })
+
+describe('App bad request', () => {
+  it('does not offer retry for a bad request', async () => {
+    const user = userEvent.setup()
+    mocked.mockReset()
+    mocked.mockResolvedValue({ ok: false, code: 'bad_request', message_vi: 'Yêu cầu không hợp lệ. Vui lòng chọn lại từ vựng.' })
+    render(<App />)
+    await chooseAndSubmit(user)
+    await screen.findByText(/Yêu cầu không hợp lệ/)
+    expect(screen.queryByRole('button', { name: 'Thử lại' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Chọn lại' })).toBeInTheDocument()
+  })
+})

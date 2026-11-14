@@ -13,7 +13,7 @@ How much English goes in the conversation depends on the level:
 - Level 3: Whole lines in English. Every line also gets a natural Vietnamese translation in "translation_vi". Example: "Can I get it to go?" / "Cho em mang đi được không?"
 At levels 1 and 2, "translation_vi" is null. At every level, explanations and quiz questions are in Vietnamese.
 
-If a chosen word is Vietnamese (for example "hóa đơn"), pick the most common beginner English word for it in this situation (for example "receipt"). Set "input" to the learner's word exactly as given and "word" to the English word. For English input, "word" equals "input". Use the English "word" in the conversation, spelled exactly as in "word".
+If a chosen word is Vietnamese (for example "hóa đơn"), pick the most common beginner English word for it in this situation (for example "receipt"). Set "input" to the learner's word exactly as given and "word" to the English word. For English input, "word" equals "input". Use the English "word" in the conversation, spelled exactly as in "word". Do not pluralize, conjugate or otherwise change the form of a chosen word (write "straw", never "straws").
 
 "vocab" has one entry per chosen word, in the order given. "meaning_vi" is a short Vietnamese meaning. "usage_vi" says in Vietnamese when and how to use the word, in one or two sentences.
 

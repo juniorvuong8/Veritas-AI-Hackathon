@@ -2,6 +2,10 @@ import type { ChatMessage } from './prompt.ts'
 
 export const LOVABLE_AI_URL = 'https://ai.gateway.lovable.dev/v1/chat/completions'
 export const DEFAULT_MODEL = 'google/gemini-3.7-flash'
+/** Per-attempt limit: two attempts must fit inside the browser's 30 s timeout. */
+export const AI_TIMEOUT_MS = 13_000
+/** Output cap (spec: usage guard). Generous, because reasoning models may count thinking tokens here. */
+export const MAX_OUTPUT_TOKENS = 8000
 
 export type AiCaller = (messages: ChatMessage[]) => Promise<string>
 
@@ -18,17 +22,31 @@ export function createLovableAiCaller(
   apiKey: string,
   fetchFn: typeof fetch = fetch,
   model: string = DEFAULT_MODEL,
+  timeoutMs: number = AI_TIMEOUT_MS,
 ): AiCaller {
   return async (messages) => {
-    const res = await fetchFn(LOVABLE_AI_URL, {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Lovable-API-Key': apiKey,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ model, messages, response_format: { type: 'json_object' } }),
-    })
+    const signal = AbortSignal.timeout(timeoutMs)
+    let res: Response
+    try {
+      res = await fetchFn(LOVABLE_AI_URL, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          'Lovable-API-Key': apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model,
+          messages,
+          response_format: { type: 'json_object' },
+          max_tokens: MAX_OUTPUT_TOKENS,
+        }),
+        signal,
+      })
+    } catch (err) {
+      if (signal.aborted) throw new AiGatewayError(504, `AI gateway did not answer within ${timeoutMs} ms`)
+      throw err
+    }
     if (!res.ok) throw new AiGatewayError(res.status, `AI gateway returned ${res.status}`)
     const data = (await res.json().catch(() => null)) as
       | { choices?: { message?: { content?: unknown } }[] }

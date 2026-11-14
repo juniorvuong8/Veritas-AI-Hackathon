@@ -20,6 +20,11 @@ describe('buildMessages', () => {
     expect(system.content).toContain('"answer_index"')
   })
 
+  it('tells the model not to change the form of chosen words', () => {
+    const [system] = buildMessages(cafe, validRequest)
+    expect(system.content).toContain('Do not pluralize, conjugate or otherwise change')
+  })
+
   it('user message names the words and the level', () => {
     const [, user] = buildMessages(cafe, { ...validRequest, level: 2 })
     expect(user.content).toContain(JSON.stringify(validRequest.words))

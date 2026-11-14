@@ -59,3 +59,20 @@ describe('checkLessonRequest', () => {
     expect(checkLessonRequest({ ...valid, words }).ok).toBe(false)
   })
 })
+
+describe('isValidWord', () => {
+  it('rejects punctuation-only words', async () => {
+    const { isValidWord } = await import('./validate-request.ts')
+    expect(isValidWord('-')).toBe(false)
+    expect(isValidWord("'")).toBe(false)
+    expect(isValidWord('coffee2')).toBe(false)
+    expect(isValidWord('hóa đơn')).toBe(true)
+  })
+})
+
+describe('normalizeWord', () => {
+  it('turns a curly apostrophe into a straight one', async () => {
+    const { normalizeWord } = await import('./scenarios.ts')
+    expect(normalizeWord('I’d like')).toBe("I'd like")
+  })
+})

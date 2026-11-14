@@ -94,7 +94,7 @@ export function getScenario(id: string): Scenario | undefined {
   return SCENARIOS.find((s) => s.id === id)
 }
 
-/** NFC-normalize, trim and collapse inner whitespace. Keeps the learner's casing. */
+/** NFC-normalize, straighten curly apostrophes, trim and collapse inner whitespace. Keeps the learner's casing. */
 export function normalizeWord(w: string): string {
-  return w.normalize('NFC').trim().replace(/\s+/g, ' ')
+  return w.normalize('NFC').replace(/[\u2018\u2019]/g, "'").trim().replace(/\s+/g, ' ')
 }

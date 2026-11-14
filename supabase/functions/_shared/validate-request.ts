@@ -5,6 +5,11 @@ export const MIN_WORDS = 3
 export const MAX_WORDS = 5
 const WORD_RULE = /^[\p{L}\p{M}' -]{1,30}$/u
 
+/** Letters (any language), spaces, hyphens and apostrophes, 1-30 chars, with at least one letter. Expects a normalized word. */
+export function isValidWord(w: string): boolean {
+  return WORD_RULE.test(w) && /\p{L}/u.test(w)
+}
+
 function isRecord(v: unknown): v is Record<string, unknown> {
   return typeof v === 'object' && v !== null && !Array.isArray(v)
 }
@@ -30,7 +35,7 @@ export function checkLessonRequest(body: unknown): CheckResult<LessonRequest> {
       errors.push(`choose ${MIN_WORDS}-${MAX_WORDS} words`)
     }
     for (const w of normalized) {
-      if (!WORD_RULE.test(w)) errors.push(`invalid word: ${JSON.stringify(w)}`)
+      if (!isValidWord(w)) errors.push(`invalid word: ${JSON.stringify(w)}`)
     }
     const keys = normalized.map((w) => w.toLowerCase())
     if (new Set(keys).size !== keys.length) errors.push('duplicate words')
