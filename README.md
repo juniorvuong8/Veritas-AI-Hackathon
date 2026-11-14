@@ -38,6 +38,24 @@ Browser (React game)           Supabase Edge Function              Claude API
 - **Something always works.** If the AI is down, rate-limited or out of credits, the learner sees a Vietnamese message, can retry, or can open a hand-written sample lesson that passes the same checks.
 - Words are read aloud with the browser's built-in voice (🔊).
 
+## Evaluation
+
+> We use a pretrained LLM to generate contextual dialogues with target vocabulary. Our baseline substitutes English vocabulary into fixed Vietnamese dialogues using a dictionary. On the same 24 test cases, the baseline achieved ___ and the LLM achieved ___. The LLM still failed when ___.
+
+Full results, method and limits: [`eval/RESULTS.md`](eval/RESULTS.md) (written once the rating is done).
+
+- **Test cases** (`eval/cases.json`): 4 places × 3 levels × 2 word sets, one of which includes a word typed in Vietnamese.
+- **Baseline** (`eval/baseline/`): a bilingual dictionary plus fixed dialogue lines, one per suggested word, stitched together.
+- **LLM**: the app's own lesson code, with the same prompt, model, settings, checks and retry as the live app.
+- **Rating**: a native Vietnamese speaker rates every dialogue on a blind, shuffled page (`/eval.html`).
+
+```bash
+npm run eval:baseline   # free
+npm run eval:llm        # paid (~$2), needs ANTHROPIC_API_KEY in supabase/.env
+npm run dev             # open http://localhost:5173/eval.html, rate, click "Lưu kết quả", move ratings.json into eval/
+npm run eval:score      # writes eval/RESULTS.md
+```
+
 ## Run it locally
 
 ```bash
