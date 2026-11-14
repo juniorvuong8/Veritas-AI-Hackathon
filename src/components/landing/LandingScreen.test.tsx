@@ -37,4 +37,9 @@ describe('LandingScreen', () => {
     render(<LandingScreen onStart={() => {}} />)
     expect(screen.getByRole('button', { name: 'EN' })).toHaveAttribute('aria-pressed', 'true')
   })
+
+  it('shows the version and build date at the bottom of the page', () => {
+    render(<LandingScreen onStart={() => {}} />)
+    expect(screen.getByText(/v1\.0\.0 · \d{2}\/\d{2}\/\d{4}/)).toBeInTheDocument()
+  })
 })
