@@ -13,6 +13,15 @@ export default defineConfig({
       '@shared': path.resolve(import.meta.dirname, './supabase/functions/_shared'),
     },
   },
+  build: {
+    rollupOptions: {
+      // The game, plus the evaluation rating page (eval.html, used locally by the developer).
+      input: {
+        main: path.resolve(import.meta.dirname, 'index.html'),
+        eval: path.resolve(import.meta.dirname, 'eval.html'),
+      },
+    },
+  },
   test: {
     environment: 'jsdom',
     include: ['src/**/*.test.{ts,tsx}', 'supabase/functions/_shared/**/*.test.ts', 'eval/**/*.test.{ts,tsx}'],
