@@ -27,6 +27,11 @@ const playerPos = (container: HTMLElement) => {
 
 const allStamps = ['cafe', 'supermarket', 'taxi', 'clinic']
 
+/** Leave the homepage for the level choice. */
+async function openStart(user: ReturnType<typeof userEvent.setup>) {
+  await user.click(screen.getAllByRole('button', { name: 'Bắt đầu' })[0])
+}
+
 describe('App', () => {
   beforeEach(() => {
     mocked.mockReset()
@@ -36,6 +41,7 @@ describe('App', () => {
   it('starts a new game at the chosen level', async () => {
     const user = userEvent.setup()
     render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: /Cấp 2/ }))
     await user.click(screen.getByRole('button', { name: 'Bắt đầu' }))
     expect(screen.getByText('Cấp 2')).toBeInTheDocument()
@@ -46,6 +52,7 @@ describe('App', () => {
     const user = userEvent.setup()
     mocked.mockResolvedValue({ ok: true, lesson: validLesson() })
     const { container } = render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: 'Bắt đầu' }))
     walkTo(doorOf(CITY, 'cafe').pos)
     expect(screen.getByText(/Hôm nay bạn muốn học từ nào/)).toBeInTheDocument()
@@ -68,6 +75,7 @@ describe('App', () => {
     localStorage.setItem(SAVE_KEY, JSON.stringify({ ...newGame(1), stamps: ['taxi'], coins: 10 }))
     const user = userEvent.setup()
     render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: 'Chơi tiếp' }))
     expect(screen.getByLabelText('Gọi taxi: đã xong')).toBeInTheDocument()
     expect(screen.getByText('🪙 10')).toBeInTheDocument()
@@ -77,6 +85,7 @@ describe('App', () => {
     localStorage.setItem(SAVE_KEY, JSON.stringify({ ...newGame(1), stamps: allStamps, complete: true, coins: 90 }))
     const user = userEvent.setup()
     render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: 'Chơi tiếp' }))
     expect(screen.queryByText('Bạn đã hoàn thành cấp 1!')).not.toBeInTheDocument()
     await user.click(screen.getByRole('button', { name: /🏆/ }))
@@ -90,6 +99,7 @@ describe('App', () => {
     localStorage.setItem(SAVE_KEY, JSON.stringify({ ...newGame(3), stamps: allStamps, complete: true }))
     const user = userEvent.setup()
     render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: 'Chơi tiếp' }))
     await user.click(screen.getByRole('button', { name: /🏆/ }))
     expect(screen.queryByRole('button', { name: /Lên cấp/ })).not.toBeInTheDocument()
@@ -101,9 +111,24 @@ describe('App', () => {
     localStorage.setItem(SAVE_KEY, JSON.stringify({ ...newGame(1), stamps: allStamps, complete: true }))
     const user = userEvent.setup()
     const { container } = render(<App />)
+    await openStart(user)
     await user.click(screen.getByRole('button', { name: 'Chơi tiếp' }))
     await user.click(screen.getByRole('button', { name: /🏆/ }))
     fireEvent.keyDown(window, { key: 'ArrowUp' })
     expect(playerPos(container)).toEqual(CITY.start)
+  })
+
+  it('shows the homepage first', () => {
+    render(<App />)
+    expect(screen.getByRole('button', { name: 'EN' })).toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: /Cấp 2/ })).not.toBeInTheDocument()
+  })
+
+  it('opens a place chosen on the homepage right after the level choice', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await user.click(screen.getByRole('button', { name: /Gọi taxi/ }))
+    await user.click(screen.getByRole('button', { name: 'Bắt đầu' }))
+    expect(screen.getByText(/lên xe nào/)).toBeInTheDocument()
   })
 })

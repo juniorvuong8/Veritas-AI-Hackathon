@@ -6,12 +6,13 @@ You walk around a city with four places: a café, a supermarket, a taxi stand an
 
 ## How to play
 
-1. **Choose a level** (it stays the same until you've stamped all four places).
-2. **Walk** with the arrow keys / WASD, or tap the map to walk there.
-3. **Enter a place** and pick your words.
-4. **Read the conversation** one line at a time (tap "Tiếp ▸", or press Enter/Space). Highlighted words have 🔊 to hear them.
-5. **Take the host's quiz**: +10 🪙 per right answer, and a stamp when you finish.
-6. **Collect all four stamps** to finish the level, then play again or move up a level.
+1. **Open the homepage** and press "Bắt đầu", or pick a place's storefront to go straight there.
+2. **Choose a level** (it stays the same until you've stamped all four places).
+3. **Walk** with the arrow keys / WASD, or tap the map to walk there.
+4. **Enter a place** and pick your words.
+5. **Read the conversation** one line at a time (tap "Tiếp ▸", or press Enter/Space). Highlighted words have 🔊 to hear them.
+6. **Take the host's quiz**: +10 🪙 per right answer, and a stamp when you finish.
+7. **Collect all four stamps** to finish the level, then play again or move up a level.
 
 Progress (level, stamps, coins) is saved in the browser.
 
@@ -78,6 +79,7 @@ The suite (Vitest) covers:
 ```
 src/                          React app (Vite, Tailwind, shadcn/ui)
   game/                       pure game logic: map, movement, pathfinding, state, saving, emoji art table
+  components/landing/         homepage (Vietnamese/English)
   components/game/            StartScreen, CityScreen, PlaceScreen, conversation, quiz, celebration
   lib/                        API client, word selection, highlighting, speech, quiz scoring
   data/fallback-lessons.ts    hand-written sample lessons

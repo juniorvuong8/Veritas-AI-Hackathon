@@ -3,6 +3,7 @@ import { Celebration } from '@/components/game/Celebration'
 import { CityScreen } from '@/components/game/CityScreen'
 import { PlaceScreen } from '@/components/game/PlaceScreen'
 import { StartScreen } from '@/components/game/StartScreen'
+import { LandingScreen } from '@/components/landing/LandingScreen'
 import { CITY, doorOf, type Pos } from '@/game/map'
 import { COINS_PER_CORRECT, canLevelUp, gameReducer, newGame, type GameAction, type GameState } from '@/game/state'
 import { clearGame, loadGame, saveGame } from '@/game/storage'
@@ -16,11 +17,13 @@ function appReducer(state: GameState | null, action: AppAction): GameState | nul
   return state ? gameReducer(state, action) : state
 }
 
-type Screen = { name: 'start' } | { name: 'city'; startPos: Pos; visit: number } | { name: 'place'; placeId: string }
+type Screen = { name: 'home' } | { name: 'start' } | { name: 'city'; startPos: Pos; visit: number } | { name: 'place'; placeId: string }
 
 function App() {
   const [game, dispatch] = useReducer(appReducer, null, () => loadGame())
-  const [screen, setScreen] = useState<Screen>({ name: 'start' })
+  const [screen, setScreen] = useState<Screen>({ name: 'home' })
+  /** A place picked on the homepage, opened right after the level choice. */
+  const [pendingPlace, setPendingPlace] = useState<string | undefined>()
   const [showHint, setShowHint] = useState(true)
   const [visit, setVisit] = useState(0)
 
@@ -28,9 +31,29 @@ function App() {
     if (game) saveGame(game)
   }, [game])
 
+  const enterGame = () => {
+    if (pendingPlace) {
+      setScreen({ name: 'place', placeId: pendingPlace })
+      setPendingPlace(undefined)
+    } else {
+      goToCity(CITY.start)
+    }
+  }
+
   const goToCity = (startPos: Pos) => {
     setVisit((v) => v + 1)
     setScreen({ name: 'city', startPos, visit: visit + 1 })
+  }
+
+  if (screen.name === 'home') {
+    return (
+      <LandingScreen
+        onStart={(placeId) => {
+          setPendingPlace(placeId)
+          setScreen({ name: 'start' })
+        }}
+      />
+    )
   }
 
   return (
@@ -44,12 +67,12 @@ function App() {
       {(screen.name === 'start' || !game) && (
         <StartScreen
           hasSave={game !== null}
-          onContinue={() => goToCity(CITY.start)}
+          onContinue={enterGame}
           onNewGame={(level) => {
             clearGame()
             dispatch({ type: 'newGame', level })
             setShowHint(true)
-            goToCity(CITY.start)
+            enterGame()
           }}
         />
       )}
