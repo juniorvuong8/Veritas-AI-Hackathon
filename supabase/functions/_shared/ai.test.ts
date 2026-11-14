@@ -1,5 +1,6 @@
+import Anthropic from '@anthropic-ai/sdk'
 import { describe, expect, it, vi } from 'vitest'
-import { AiGatewayError, createLovableAiCaller, parseJsonObject } from './ai.ts'
+import { AiError, createClaudeAiCaller, parseJsonObject, type ClaudeClient } from './ai.ts'
 import type { ChatMessage } from './prompt.ts'
 
 const lesson = { title_vi: 'x', n: 1 }
@@ -27,53 +28,74 @@ const messages: ChatMessage[] = [
   { role: 'user', content: 'u' },
 ]
 
-function fakeFetch(status: number, body: unknown) {
-  return vi.fn(async () => new Response(JSON.stringify(body), { status }))
+function fakeClient(result: unknown | (() => never)) {
+  const create = vi.fn(async () => (typeof result === 'function' ? (result as () => never)() : result))
+  return { client: { beta: { messages: { create } } } as unknown as ClaudeClient, create }
 }
 
-describe('createLovableAiCaller', () => {
-  it('posts to the gateway with both auth headers and JSON mode', async () => {
-    const f = fakeFetch(200, { choices: [{ message: { content: '{"a":1}' } }] })
-    const call = createLovableAiCaller('key123', f as unknown as typeof fetch)
-    await expect(call(messages)).resolves.toBe('{"a":1}')
-    const [url, init] = f.mock.calls[0] as unknown as [string, RequestInit]
-    expect(url).toBe('https://ai.gateway.lovable.dev/v1/chat/completions')
-    expect(init.method).toBe('POST')
-    const headers = new Headers(init.headers)
-    expect(headers.get('Authorization')).toBe('Bearer key123')
-    expect(headers.get('Lovable-API-Key')).toBe('key123')
-    const body = JSON.parse(init.body as string)
-    expect(body.model).toBe('google/gemini-3.7-flash')
-    expect(body.messages).toEqual(messages)
-    expect(body.response_format).toEqual({ type: 'json_object' })
-    expect(body.max_tokens).toBe(8000)
-    expect(init.signal).toBeInstanceOf(AbortSignal)
+const reply = (text: string, stop_reason = 'end_turn') => ({
+  stop_reason,
+  content: [{ type: 'thinking', thinking: '' }, { type: 'text', text }],
+})
+
+const apiError = (status: number) =>
+  Anthropic.APIError.generate(status, { type: 'error', error: { type: 'x', message: 'm' } }, 'm', new Headers())
+
+describe('createClaudeAiCaller', () => {
+  it('sends the system prompt separately and returns the text', async () => {
+    const { client, create } = fakeClient(reply('{"a":1}'))
+    await expect(createClaudeAiCaller('k', { client })(messages)).resolves.toBe('{"a":1}')
+    const [params, options] = create.mock.calls[0] as unknown as [Record<string, unknown>, Record<string, unknown>]
+    expect(params.model).toBe('claude-opus-5-5')
+    expect(params.system).toBe('s')
+    expect(params.messages).toEqual([{ role: 'user', content: 'u' }])
+    expect(params.max_tokens).toBe(8000)
+    expect(params.output_config).toEqual({ effort: 'low' })
+    expect(params.speed).toBe('fast')
+    expect(params.fallbacks).toBe('default')
+    expect(params.betas).toEqual(['server-side-fallback-2026-07-01'])
+    expect(options).toEqual({ timeout: 25_000, maxRetries: 0 })
   })
 
-  it('throws a retryable AiGatewayError 504 when the gateway is too slow', async () => {
-    const slow = vi.fn(
-      (_url: string, init: RequestInit) =>
-        new Promise<Response>((_resolve, reject) => {
-          init.signal?.addEventListener('abort', () => reject(new DOMException('timed out', 'TimeoutError')))
-        }),
-    )
-    const call = createLovableAiCaller('k', slow as unknown as typeof fetch, undefined, 10)
-    await expect(call(messages)).rejects.toMatchObject({ name: 'AiGatewayError', status: 504 })
+  it('throws a retryable AiError 504 when Claude is too slow', async () => {
+    const { client } = fakeClient(() => {
+      throw new Anthropic.APIConnectionTimeoutError()
+    })
+    await expect(createClaudeAiCaller('k', { client })(messages)).rejects.toMatchObject({ name: 'AiError', status: 504 })
   })
 
-  it('throws AiGatewayError 429 when rate-limited', async () => {
-    const call = createLovableAiCaller('k', fakeFetch(429, {}) as unknown as typeof fetch)
-    await expect(call(messages)).rejects.toMatchObject({ name: 'AiGatewayError', status: 429 })
+  it('throws AiError 429 when rate-limited', async () => {
+    const { client } = fakeClient(() => {
+      throw apiError(429)
+    })
+    await expect(createClaudeAiCaller('k', { client })(messages)).rejects.toMatchObject({ name: 'AiError', status: 429 })
   })
 
-  it('throws AiGatewayError 402 when out of credits', async () => {
-    const call = createLovableAiCaller('k', fakeFetch(402, {}) as unknown as typeof fetch)
-    await expect(call(messages)).rejects.toBeInstanceOf(AiGatewayError)
+  it('retries at standard speed when fast mode is rate-limited', async () => {
+    const create = vi
+      .fn()
+      .mockRejectedValueOnce(apiError(429))
+      .mockResolvedValueOnce(reply('{"a":1}'))
+    const client = { beta: { messages: { create } } } as unknown as ClaudeClient
+    await expect(createClaudeAiCaller('k', { client })(messages)).resolves.toBe('{"a":1}')
+    expect(create).toHaveBeenCalledTimes(2)
+    expect(create.mock.calls[0][0].speed).toBe('fast')
+    expect(create.mock.calls[1][0].speed).toBe('standard')
+  })
+
+  it('throws AiError 402 when out of credits', async () => {
+    const { client } = fakeClient(() => {
+      throw apiError(402)
+    })
+    const call = createClaudeAiCaller('k', { client })
+    await expect(call(messages)).rejects.toBeInstanceOf(AiError)
     await expect(call(messages)).rejects.toMatchObject({ status: 402 })
   })
 
-  it('throws AiGatewayError 502 when the answer has no content', async () => {
-    const call = createLovableAiCaller('k', fakeFetch(200, { choices: [] }) as unknown as typeof fetch)
-    await expect(call(messages)).rejects.toMatchObject({ status: 502 })
+  it('throws AiError 502 on a refusal, a cut-off answer, or no text', async () => {
+    for (const r of [reply('{}', 'refusal'), reply('{"a":', 'max_tokens'), { stop_reason: 'end_turn', content: [] }]) {
+      const { client } = fakeClient(r)
+      await expect(createClaudeAiCaller('k', { client })(messages)).rejects.toMatchObject({ status: 502 })
+    }
   })
 })

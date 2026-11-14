@@ -1,5 +1,5 @@
 // Supabase Edge Function: POST { scenarioId, words, level } -> Lesson | ErrorBody
-import { createLovableAiCaller } from '../_shared/ai.ts'
+import { createClaudeAiCaller } from '../_shared/ai.ts'
 import { ERRORS, generateLesson } from '../_shared/generate.ts'
 
 const corsHeaders = {
@@ -25,14 +25,14 @@ Deno.serve(async (req) => {
     return json(400, { code: 'bad_request', message_vi: ERRORS.bad_request.message_vi })
   }
 
-  const apiKey = Deno.env.get('LOVABLE_API_KEY')
+  const apiKey = Deno.env.get('ANTHROPIC_API_KEY')
   if (!apiKey) {
-    console.error('LOVABLE_API_KEY is not set')
+    console.error('ANTHROPIC_API_KEY is not set')
     return json(502, { code: 'ai_failed', message_vi: ERRORS.ai_failed.message_vi })
   }
 
   try {
-    const result = await generateLesson(body, createLovableAiCaller(apiKey))
+    const result = await generateLesson(body, createClaudeAiCaller(apiKey))
     return json(result.status, result.body)
   } catch (err) {
     // Keep CORS headers on unexpected failures so the browser shows our message, not a network error.

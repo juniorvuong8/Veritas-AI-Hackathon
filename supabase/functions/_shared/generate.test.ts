@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
-import { AiGatewayError, type AiCaller } from './ai.ts'
+import { AiError, type AiCaller } from './ai.ts'
 import { generateLesson } from './generate.ts'
 import { validLesson, validRequest } from './test-fixtures.ts'
 
@@ -53,7 +53,7 @@ describe('generateLesson', () => {
   })
 
   it('maps gateway 429 to rate_limited without retrying', async () => {
-    const ai = queue(new AiGatewayError(429, 'busy'), good)
+    const ai = queue(new AiError(429, 'busy'), good)
     const res = await generateLesson(validRequest, ai)
     expect(res.status).toBe(429)
     expect(res.body).toMatchObject({ code: 'rate_limited' })
@@ -61,7 +61,7 @@ describe('generateLesson', () => {
   })
 
   it('maps gateway 402 to out_of_credits (503) without retrying', async () => {
-    const ai = queue(new AiGatewayError(402, 'pay'), good)
+    const ai = queue(new AiError(402, 'pay'), good)
     const res = await generateLesson(validRequest, ai)
     expect(res.status).toBe(503)
     expect(res.body).toMatchObject({ code: 'out_of_credits' })
@@ -69,7 +69,7 @@ describe('generateLesson', () => {
   })
 
   it('retries after another gateway error, then fails with ai_failed', async () => {
-    const ai = queue(new AiGatewayError(500, 'x'), new Error('network'))
+    const ai = queue(new AiError(500, 'x'), new Error('network'))
     const res = await generateLesson(validRequest, ai)
     expect(res.status).toBe(502)
     expect(ai).toHaveBeenCalledTimes(2)
